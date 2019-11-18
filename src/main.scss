@@ -1,0 +1,194 @@
+ $icon-font-dir: "~material-design-icons-iconfont/dist/fonts/";
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src:
+    local("Material Icons"),
+    local("MaterialIcons-Regular"),
+    url("#{$icon-font-dir}MaterialIcons-Regular.woff2") format("woff2"),
+    url("#{$icon-font-dir}MaterialIcons-Regular.woff") format("woff");
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+  /* Support for IE. */
+  font-feature-settings: 'liga'
+}
+
+/*
+ * Nanum Barun Gothic Web Fonts
+ * https://github.com/hiun/NanumBarunGothic
+ * Copyright (c) 2010, NAVER Corporation (http://www.nhncorp.com)
+ */
+$nanum-font-dir: "~typeface-nanum-barun-gothic/";
+@font-face {
+  font-family: 'Nanum Barun Gothic';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Nanum Barun Gothic'),
+  local('NanumBarunGothic'),
+  url("#{$nanum-font-dir}NanumBarunGothic.woff2") format('woff2'),
+  url("#{$nanum-font-dir}NanumBarunGothic.woff") format('woff');
+}
+
+@font-face {
+  font-family: 'Nanum Barun Gothic';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Nanum Barun Gothic Bold'),
+  local('NanumBarunGothicBold'),
+  url("#{$nanum-font-dir}NanumBarunGothicBold.woff2") format('woff2'),
+  url("#{$nanum-font-dir}NanumBarunGothicBold.woff") format('woff');
+}
+
+html {
+  background-color: #000f21;
+}
+body{
+  background-color: #000f21;
+  font-family: arial Nanum Barun Gothic,Roboto,Noto Sans,-apple-system,BlinkMacSystemFont,sans-serif;
+  .application{
+    font-family: arial Nanum Barun Gothic,Roboto,Noto Sans,-apple-system,BlinkMacSystemFont,sans-serif;
+  }
+}
+
+button {
+  outline: none;
+}
+
+.wrapper{
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  align-content: center;
+  .item-right{
+    margin-left: auto;
+    & + .item-right{
+      margin-left: 0;
+    }
+  }
+}
+
+.tab-fade-enter-active, .tab-fade-leave-active {
+  transition: opacity 0.2s;
+}
+.tab-fade-leave-to {
+  opacity: 1;
+}
+
+.list {
+  a{
+    color: inherit !important;
+    &:hover{
+      text-decoration: inherit !important;
+    }
+  }
+}
+
+#main{
+  background:  #000f21;
+}
+
+
+.page-leave-active, .page-enter-active {
+  position: fixed;
+  top:0;
+  left: 0;
+  right: 0;
+}
+
+
+.page-leave-active {
+  transition: all .3s;
+}
+
+.page-leave-to, .page-enter {
+ transform: translateY(25px);
+ opacity: 0;
+}
+
+ .page-enter-active {
+   transition: all .3s .1s;
+ }
+
+ .page-enter-to {
+   transform: translateY(0);
+   opacity: 1;
+ }
+
+ input[type=date]::-webkit-inner-spin-button,
+ input[type=date]::-webkit-outer-spin-button {
+   -webkit-appearance: none;
+ }
+
+
+
+.cw-list {
+  display: block;
+  padding: 0 12px;
+  width: 100%;
+  box-sizing: border-box;
+
+  .cw-list-title {
+    color: #2db7bd;
+  }
+  ul {
+    padding: 0 0 8px;
+    margin-top: 8px;
+    border-bottom: 2px solid #2db7bd;
+    li {
+      height: 36px;
+      background-color: #fff;
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+
+
+      .cw-list-label {
+        padding-left: 20px;
+      }
+
+      .cw-list-value {
+        margin-left: auto;
+        margin-right: 12px;
+        .cw-list-input {
+          text-align: right;
+          outline: none;
+          width: 60px;
+          margin-right: 4px;
+          height: 18px;
+          border-bottom: 2px solid #555;
+          &:focus {
+            border-bottom: 3px solid #555;
+          }
+        }
+      }
+
+      &:first-child {
+        border-radius: 8px 8px 0 0;
+      }
+
+      &:last-child {
+        border-radius: 0 0 8px 8px;
+      }
+    }
+  }
+}

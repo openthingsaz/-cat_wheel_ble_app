@@ -22,7 +22,7 @@
   import Vue from 'vue'
   import {connect, db} from "./assets/js/db"
   import {Confirm} from "./assets/js/dialog"
-  import {bytesToString, write} from "./assets/js/bleUtill"
+  import {bytesToString, getCRC, write} from "./assets/js/bleUtill"
   import catHeader from './components/home/cat-header.vue'
   // import splash from './components/splash.vue';
 
@@ -72,19 +72,31 @@
     },
     methods: {
       onDeviceConnect: function () {
-          var buffer = "";
+          let buffer = [];
           ble.startNotification(this.$store.getters.device.id, "6E400001-B5A3-F393-E0A9-E50E24DCCA9E", "6E400003-B5A3-F393-E0A9-E50E24DCCA9E", data => {
-              buffer += bytesToString(data);
-              const arr = buffer.split("\n");
-              while (arr.length > 1) {
-                  const item = arr.shift();
-                  console.log(item);
-                  if (item.trim().length){
-                      if (!isNaN(item))
-                          this.$store.commit('setWheelPos', parseInt(item));
+              buffer = buffer.concat(Array.from(new Uint8Array(data)));
+              let stxPos = 0;
+              while (true) {
+                  let flag = false;
+                  stxPos = buffer.indexOf(2, stxPos);
+                  if (stxPos === -1) {
+                      break;
+                  } else if (buffer.length > stxPos + 10 && buffer[stxPos + 9] === 13 && buffer[stxPos + 10] === 10) {
+                      const cmdData = buffer.slice(stxPos + 1, stxPos + 7);
+                      const crc = getCRC(cmdData);
+                      if (crc[0] === buffer[stxPos+7] && crc[1] === buffer[stxPos+8]) {
+                          flag = true;
+                          console.log(cmdData[0], cmdData[1], cmdData.slice(2));
+                      }
+                  }
+                  if (flag) {
+                      buffer.splice(0, stxPos+11);
+                      stxPos = 0;
+                  } else {
+                      stxPos += 1;
                   }
               }
-              buffer = arr.join("\n");
+              console.log(buffer);
           }, e => console.error(e));
         },
       checkDevice: function (flag) {

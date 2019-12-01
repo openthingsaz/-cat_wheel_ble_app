@@ -74,6 +74,7 @@
 <script>
   import Vue from 'vue';
   import {mapGetters} from 'vuex'
+  import moment from 'moment'
 
   import catHeader from './home/cat-header.vue';
   import circlePointer from './home/circlePointer.vue';
@@ -179,14 +180,16 @@
         connect(db => {
             db.transaction(tx => {
                 const catId = this.$store.getters.curCatId;
-                console.log(catId );
+                const today = moment().startOf('day');
+                const tomorrow = today.clone().date(today.date()+1);
                 if (catId !== 0) {
                     tx.executeSql(
-                        "SELECT SUM(move) as today_move, sum(calorie) as today_calorie FROM logs_v2 WHERE cat = ?", [catId],
+                        "SELECT SUM(move) as today_move, sum(calorie) as today_calorie FROM logs_v2 WHERE cat = ? and stdt >= ? AND stdt < ?", [catId, today.unix(), tomorrow.unix()],
                         (tx, res) => {
                             console.log(res.rows);
                             if (res.rows.length) {
                                 let item = res.rows.item(0);
+                                console.log(item);
                                 this.$store.commit('setTodayWheelData',[item['today_calorie'],item['today_move']])
                             }
                         },

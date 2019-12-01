@@ -72,14 +72,20 @@
     },
     methods: {
       onDeviceConnect: function () {
-            bluetoothSerial.subscribe('\n', (data)=>{
-                data = data.trim();
-                if (data.length){
-                    console.log(data);
-                    if (!isNaN(data))
-                        this.$store.commit('setWheelPos', parseInt(data));
-                }
-            });
+          var buffer = "";
+          ble.startNotification(this.$store.getters.device.id, "6E400001-B5A3-F393-E0A9-E50E24DCCA9E", "6E400003-B5A3-F393-E0A9-E50E24DCCA9E", data => {
+              buffer += bytesToString(data);
+              const arr = buffer.split("\n");
+              while (arr.length > 1) {
+                  const item = arr.shift();
+                  console.log(item);
+                  if (item.trim().length){
+                      if (!isNaN(item))
+                          this.$store.commit('setWheelPos', parseInt(item));
+                  }
+              }
+              buffer = arr.join("\n");
+          }, e => console.error(e));
         },
       checkDevice: function (flag) {
         this.connecting = true;
@@ -102,7 +108,8 @@
             });
           });
         } else {
-          this.$router.push("connect-dialog")
+            this.connecting = false;
+            this.$router.push("connect-dialog")
         }
       },
       login(user){
@@ -128,27 +135,21 @@
           })
         }
       },
+
       wheelChecker() {
           setInterval(() => {
               const now = new Date();
               const cat = this.$store.getters.curCat;
               const wheel = this.$store.getters.wheel;
-              let calorie = (wheel.move / 360 * 1.1 * Math.PI) * (0.06 + (cat.weight-5)/100);
+              const calorie = (wheel.move / 360 * 1.1 * Math.PI) * (0.06 + (cat.weight-5)/100);
 
-              if (cat.id !== 0 && wheel.firstUpdate != null && (now - wheel.lastUpdate > 1500 || now - wheel.firstUpdate > 10000)) {
-                  console.log([cat.id, Math.round(wheel.firstUpdate/1000), Math.round((wheel.lastUpdate-wheel.firstUpdate)/1000), wheel.move, calorie] );
+              if (cat.id !== 0 && wheel.firstUpdate != null && (now - wheel.lastUpdate > 5000 || wheel.lastUpdate - wheel.firstUpdate > 20000)) {
+                  const args = [cat.id, Math.round(wheel.firstUpdate/1000), Math.round((wheel.lastUpdate - wheel.firstUpdate)/1000), wheel.move, calorie];
+                  this.$store.commit('resetTmp');
                   connect(db => {
                       db.transaction(tx => {
-                          tx.executeSql(
-                              'INSERT INTO logs_v2 VALUES (?,?,?,?,?)',
-                              [cat.id, Math.round(wheel.firstUpdate/1000), Math.round((wheel.lastUpdate - wheel.firstUpdate)/1000), wheel.move, calorie],
-                              () => {
-                                  this.$store.commit('insertEnd');
-                              },
-                              err => {
-                                  console.error(err);
-                              }
-                          );
+                          console.log(`INSERT ${args}`);
+                          tx.executeSql('INSERT INTO logs_v2 VALUES (?,?,?,?,?)', args, () => {}, err => console.error(err));
                       }, err => {
                           console.error(err);
                       })

@@ -32,4 +32,6 @@ function connect(callback) {
 
 }
 
+window.queryTest = (q, p) => connect(db => db.transaction(tx => tx.executeSql(q, p, (tx, res) => console.log(Array.from(Array(res.rows.length).keys()).map(i => res.rows.item(i))), err => console.error(err))));
+
 export {connect}

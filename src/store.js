@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import moment from 'moment'
 import {hsv_to_rgb} from 'colorsys'
-import {write} from 'src/assets/js/bleUtill'
+import {write} from './assets/js/bleUtill'
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -186,7 +186,7 @@ export default new Vuex.Store({
       }
     },
 
-    insertEnd(state) {
+    resetTmp(state) {
       const cat = state.cats.find(cat => cat.id === state.curCatId);
       state.wheel.firstUpdate = null
       state.wheel.lastUpdate = null

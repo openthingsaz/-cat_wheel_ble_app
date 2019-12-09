@@ -16,7 +16,7 @@
         </div>
       </header>
       <div id="battery">
-        <div>
+        <div v-if="device">
           Wheel Battery
           <img :src="batteryInfo.img">
           <span :style="{color:batteryInfo.color}">{{battery}}%</span>
@@ -43,19 +43,6 @@
           <color-picker @input="onPickerInput" @change="save"/>
         </div>
 
-      </div>
-      <div class="footer">
-        <label id="autoOff">
-          <input type="checkbox" @change="save" v-model="colorInfo.autoOff">
-          <i></i>
-          Auto Off
-        </label>
-
-        <div id="autoOffTimer">
-          Auto Off Time
-          <input type="number" v-model="colorInfo.timeoutSec" @change="save">
-          Sec
-        </div>
       </div>
     </div>
 </template>
@@ -121,7 +108,7 @@
                 ]
             },
             ...mapGetters([
-                'curCat', 'battery', 'curColor'
+                'curCat', 'battery', 'curColor', 'device'
             ])
         },
         methods: {
@@ -130,7 +117,7 @@
                 let color;
                 if (idx === 8) {
                     // random color
-                    setLedRandomColor(this.$store.getters.device.id);
+                    setLedRandomColor(this.$store.getters.device && this.$store.getters.device.id);
                     return;
                 } else if (idx === 4) {
                   color = "#000000";
@@ -163,7 +150,7 @@
             save(color) {
                 this.$store.commit('setColor', this.colorInfo);
                 const parsedColor = hex2Rgb(color);
-                setLedColor(this.$store.getters.device.id, parsedColor.r, parsedColor.g, parsedColor.b);
+                setLedColor(this.$store.getters.device && this.$store.getters.device.id, parsedColor.r, parsedColor.g, parsedColor.b);
             },
 
             onPickerInput(e) {
@@ -193,7 +180,7 @@
             document.addEventListener("resize", this.resize);
         },
         mounted(){
-            getDeviceBattery(this.$store.getters.device.id)
+            getDeviceBattery(this.$store.getters.device && this.$store.getters.device.id)
         },
         destroyed() {
             document.removeEventListener("resize", this.resize);
@@ -271,6 +258,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    padding-bottom: 50px;
   }
 
   #palette{
@@ -335,50 +323,6 @@
     }
   }
 
-  #autoOff {
-    font-size: 19px;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    padding-bottom: 8px;
-    padding-left: 8px;
-    input {
-      display: none;
-    }
-    input + i {
-      width: 18px;
-      height: 18px;
-      margin-right: 12px;
-      display: block;
-      background-repeat: no-repeat ;
-      background-size: cover;
-      background-position: center center;
-      background-image: url(../../../static/img/check_off.png);
-    }
-
-    input:checked + i {
-      background-image: url(../../../static/img/check_on.png);
-    }
-  }
-
-  #autoOffTimer {
-    font-size: 19px;
-    color: #ffffff;
-    display: flex;
-    padding-bottom: 8px;
-    padding-right: 8px;
-    input {
-      text-align: center;
-      height: 26px;
-      margin: 0 8px;
-      width: 50px;
-      outline: none;
-      border-bottom: 2px solid #555;
-      &:focus {
-        border-bottom: 3px solid #555;
-      }
-    }
-  }
 
 
 

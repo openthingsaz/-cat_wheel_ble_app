@@ -76,8 +76,6 @@ export default new Vuex.Store({
         color0: null,
         color1: null,
         color2: null,
-        autoOff: false,
-        timeoutSec:null
       }
     },
 

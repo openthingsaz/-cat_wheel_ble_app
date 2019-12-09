@@ -22,7 +22,7 @@
     import Vue from 'vue'
     import {connect, db} from "./assets/js/db"
     import {Confirm} from "./assets/js/dialog"
-    import {getCRC, getDegree, hexArrToInt, setTimeSync} from "./assets/js/bleUtill"
+    import {getCRC, getDegree, getMoveData, hexArrToInt, setTimeSync} from "./assets/js/bleUtill"
     import catHeader from './components/home/cat-header.vue'
     // import splash from './components/splash.vue';
 
@@ -97,18 +97,15 @@
                             stxPos = 0;
                         }
                     }
-                    console.log(buffer);
                 }, e => console.error(e));
-
-                // this.getDegreeLoop();
+                this.getMoveDataLoop();
                 setTimeSync(this.$store.getters.device.id)
-
             },
-            getDegreeLoop: function() {
+            getMoveDataLoop: function() {
                   if (this.$store.getters.device && this.$store.getters.device.id ) {
-                      getDegree(this.$store.getters.device.id);
+                      getMoveData(this.$store.getters.device.id);
                       setTimeout(()=> {
-                          this.getDegreeLoop()
+                          this.getMoveDataLoop()
                       }, this.$store.getters.wheel.reqTerm);
                   }
             },
@@ -122,7 +119,6 @@
                     }
                 } else if (cmd === 0x04) { // GET_DEGREE
                     this.$store.commit('setWheelPos', hexArrToInt(data) % 360);
-                } else if (cmd === 0x10) { // GET_N_TIME_AUTO_OFF
                 } else if (cmd === 0x11) { // GET_BAT
                     this.$store.commit('setBattery', hexArrToInt(data) % 101);
                 } else if (cmd === 0x20) { // GET_MOVE_DATA

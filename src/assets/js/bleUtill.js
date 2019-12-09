@@ -19,6 +19,9 @@ function write(device_id, data, success, failure) {
 
 
 function sendCommand(device_id, fnCode, data, success, failure) {
+  if (!device_id) {
+    return;
+  }
   success = success || function () {
   };
   failure = failure || function () {
@@ -126,18 +129,6 @@ function setLedRandomColor(deviceId) {
   sendCommand(deviceId, 0x7, [0, 0, 0, 0]);
 }
 
-function setAutoLedOff(deviceId, status) {
-  sendCommand(deviceId, 0x8, [status ? 2 : 1, 0, 0, 0]);
-}
-
-function setAutoLedOffTime(deviceId, sec) {
-  sendCommand(deviceId, 0x9, intToHexArr(Math.max(1, Math.min(sec, 999))));
-}
-
-function getAutoOff(deviceId) {
-  sendCommand(deviceId, 0x10, [0, 0, 0, 0]);
-}
-
 function getDeviceBattery(deviceId) {
   sendCommand(deviceId, 0x11, [0, 0, 0, 0]);
 }
@@ -162,8 +153,6 @@ export {
   setLedPos,
   setLedColor,
   setLedRandomColor,
-  setAutoLedOff,
-  setAutoLedOffTime,
   getDeviceBattery,
   sendCommand,
   getCRC,
@@ -194,15 +183,6 @@ window.test = {
   },
   setLedRandomColor: function () {
     setLedRandomColor(window.testDeviceId)
-  },
-  setAutoLedOff: function (flag) {
-    setAutoLedOff(window.testDeviceId,flag)
-  },
-  setAutoLedOffTime: function (sec) {
-    setAutoLedOffTime(window.testDeviceId, sec)
-  },
-  getAutoOff: function() {
-    getAutoOff(window.testDeviceId)
   },
   getDeviceBattery: function () {
     getDeviceBattery(window.testDeviceId)

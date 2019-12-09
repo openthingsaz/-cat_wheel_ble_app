@@ -105,7 +105,7 @@
                         angle+=90;
                         angle%=360;
                         const _angle = ((wheel.reverse ? 360 - angle - wheel.offset: angle + wheel.offset) + 360) % 360;
-                        setLedPos(this.$store.getters.device.id, _angle);
+                        setLedPos(this.$store.getters.device && this.$store.getters.device.id, _angle);
                     }
                 }
             },

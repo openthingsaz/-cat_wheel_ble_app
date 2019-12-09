@@ -22,7 +22,7 @@
 </template>
 <script>
     import { mapGetters } from 'vuex'
-    import {write} from "../../assets/js/bleUtill"
+    import {setLedPos, write} from "../../assets/js/bleUtill"
     export default {
         name: 'circlePointer',
         data() {
@@ -105,10 +105,12 @@
                         angle+=90;
                         angle%=360;
                         const _angle = ((wheel.reverse ? 360 - angle - wheel.offset: angle + wheel.offset) + 360) % 360;
-                        this.sendCommend(`ANG${_angle}`);
+                        setLedPos(this.$store.getters.device.id, _angle);
                     }
                 }
             },
+
+
             sendCommend(cmd) {
                 if (!this.$store.getters.device) return;
 

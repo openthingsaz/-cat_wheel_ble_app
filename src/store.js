@@ -1,8 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import moment from 'moment'
-import {hsv_to_rgb} from 'colorsys'
-import {write} from './assets/js/bleUtill'
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -55,7 +53,7 @@ export default new Vuex.Store({
     },
 
     battery(state){
-      return state.battery
+      return state.battery;
     },
 
     cats(state){
@@ -201,27 +199,9 @@ export default new Vuex.Store({
       state.wheel.move = 0;
     },
 
-    startRandomColor(state){
-      const update = ()=>{
-        let count = state.point.random.count;
-        console.log(count, 99, 100);
-        let {r,g,b} = hsv_to_rgb(count, 99, 100)
-        state.point.random.hex = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-        const cmd = `RGB${(r+"").padStart(3, "0")},${(g+"").padStart(3, "0")},${(b+"").padStart(3, "0")}`;
-        write(state.device.id, cmd+"\n");
-
-        if (count === 360) {
-          state.point.random.count = 0;
-        }
-        state.point.random.count++;
-      }
-
-      clearInterval(state.point.random.timer);
-      state.point.random.count = 0;
-      state.point.random.timer = setInterval(update, 1000/30)
+    setBattery(state, val) {
+        state.battery = val;
     },
-
-
 
     // setting
     setOffset(state, offset) {
@@ -242,6 +222,6 @@ export default new Vuex.Store({
     setReqTerm(state, term) {
       state.wheel.reqTerm = term;
       localStorage.setItem("_req_term", term)
-    }
+    },
   },
 });

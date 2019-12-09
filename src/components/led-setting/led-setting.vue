@@ -62,7 +62,7 @@
 <script>
     import {hex2Rgb, rgb2Hex}  from 'colorsys';
     import colorPicker from './colorPicker.vue'
-    import {write} from "../../assets/js/bleUtill"
+    import {getDeviceBattery, setLedColor, setLedRandomColor, write} from "../../assets/js/bleUtill"
     import { mapGetters } from 'vuex'
 
     export default {
@@ -129,7 +129,8 @@
                 this.colorInfo.colorPos = idx;
                 let color;
                 if (idx === 8) {
-                    this.$store.commit('startRandomColor');
+                    // random color
+                    setLedRandomColor(this.$store.getters.device.id);
                     return;
                 } else if (idx === 4) {
                   color = "#000000";
@@ -162,7 +163,7 @@
             save(color) {
                 this.$store.commit('setColor', this.colorInfo);
                 const parsedColor = hex2Rgb(color);
-                this.sendCommend(`RGB${(parsedColor.r+"").padStart(3, "0")},${(parsedColor.g+"").padStart(3, "0")},${(parsedColor.b+"").padStart(3, "0")}`);
+                setLedColor(this.$store.getters.device.id, parsedColor.r, parsedColor.g, parsedColor.b);
             },
 
             onPickerInput(e) {
@@ -190,6 +191,9 @@
         },
         created() {
             document.addEventListener("resize", this.resize);
+        },
+        mounted(){
+            getDeviceBattery(this.$store.getters.device.id)
         },
         destroyed() {
             document.removeEventListener("resize", this.resize);

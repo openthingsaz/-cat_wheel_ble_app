@@ -138,7 +138,7 @@
                         if (Math.random()*100 < hourPerMap[hour]) {
                             const sec = Math.round(Math.random() * 120);
                             const move = sec * Math.round(Math.random() * 200);
-                            const calorie = (move / 360 * 1.1 * Math.PI) * (0.06 + (cat.weight-5)/100);
+                            const calorie = (move / 100) * (0.06 + (cat.weight-5)/100);
                             const args = [cat.id, stDate.unix(), sec, move, calorie]
                             console.log(stDate.format("YYYY-MM-DD HH:mm:ss"), args);
                             tx.executeSql('INSERT INTO logs_v2 VALUES (?,?,?,?,?)', args, () => {}, err => console.error(err));

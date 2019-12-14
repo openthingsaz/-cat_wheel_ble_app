@@ -25,7 +25,7 @@
           Distance
         </div>
         <div>
-          <div>{{wheelMoveDistance}}</div>
+          <div>{{wheelMoveDistanceStr}}</div>
            <span>{{wheelMoveDistanceUnit}}</span>
         </div>
       </div>
@@ -46,35 +46,16 @@
           Burn
         </div>
         <div>
-          <div>{{calorie}}</div>
+          <div>{{calorieStr}}</div>
           <span>kcal</span>
         </div>
       </div>
     </div>
-
-
-<!--    <div class="graph" :style="{'height': `${graphHeight}px`}">-->
-<!--      <img src="img/graph.jpg">-->
-<!--    </div>-->
-<!--    <v-btn-->
-<!--      id="addConnectFAB"-->
-<!--      color="pink"-->
-<!--      dark-->
-<!--      small-->
-<!--      absolute-->
-<!--      bottom-->
-<!--      right-->
-<!--      fab-->
-<!--      @click="$router.push('connect-dialog')"-->
-<!--    >-->
-<!--      CONNECT-->
-<!--    </v-btn>-->
   </div>
 </template>
 <script>
   import Vue from 'vue';
   import {mapGetters} from 'vuex'
-  import moment from 'moment'
 
   import catHeader from './home/cat-header.vue';
   import circlePointer from './home/circlePointer.vue';
@@ -93,10 +74,7 @@
       };
     },
     computed: {
-        graphHeight(){
-          return window.innerHeight;
-        },
-        wheelMoveDistance() {
+        wheelMoveDistanceStr() {
             const distance = this.$store.getters.wheelMoveDistance;
             if (distance < 1000) {
                 return Math.round(distance);
@@ -109,7 +87,7 @@
         wheelMoveDistanceUnit() {
             return this.$store.getters.wheelMoveDistance < 1000 ? 'm' : 'km';
         },
-        calorie() {
+        calorieStr() {
             const calorie = this.$store.getters.calorie;
             if (calorie < 100) {
                 return calorie.toFixed(2);
@@ -119,92 +97,15 @@
         },
         ...mapGetters([
             'device',
+            'wheelMoveDistance',
+            'calorie',
             'wheelCount'
         ]),
     },
     methods: {
-      share(){
 
-        // write(this.$store.getters.device.id, "BAT\n", function () { }, function (e) {
-        //   console.log(e);
-        // });
-
-        // db.executeSql(
-        //   "SELECT stdt * 1000 as stdt, (stdt+sec) * 1000 as endt, sec, move, calorie FROM logs",
-        //   [],
-        //   (res) => {
-        //     const arr = [['Start datetime', 'End datetime', 'Exercise time (second)', 'Expend calories (cal)', 'Distance (m)', 'Wheels']]
-        //     for (let i = 0; i < res.rows.length; i++){
-        //       const item = res.rows.item(i)
-        //       arr.push([
-        //         moment(item.stdt).format("YYYY-MM-DD HH:mm:ss"),
-        //         moment(item.endt).format("YYYY-MM-DD HH:mm:ss"),
-        //         item.sec,
-        //         item.calorie.toFixed(2),
-        //         (item.move / 360 * 1.1 * Math.PI).toFixed(1),
-        //         Math.floor(item.move / 360),
-        //       ])
-        //     }
-        //
-        //     (async () => {
-        //       try{
-        //         const logs = await csvStringify(arr);
-        //         const cat = this.$store.getters.cat;
-        //         if (!cat) return;
-        //
-        //         const catInfo = await csvStringify([
-        //           ["Birth", 'Weight (kg)', 'Bust (cm)', 'Leg length (cm)', "Fat"],
-        //           [cat.birth, cat.weight, cat.bust, cat.legLength, parseFloat(((((cat.bust/0.7062) - cat.legLength) / 0.9156) - cat.legLength).toFixed(1))]
-        //         ]);
-        //
-        //         window.cordova.plugins.email.open({
-        //           to: ['skytreewing@hanmail.net'],
-        //           subject: `Cat Wheel 로그데이터 전송`,
-        //           body: `Cat Wheel 로그데이터 전송`,
-        //           attachments: [`base64:cat_info.csv//${btoa(catInfo)}`, `base64:logs.csv//${btoa(logs)}`]
-        //         })
-        //
-        //       } catch (e) {
-        //           console.error(e);
-        //       }
-        //
-        //     })()
-        //   },
-        //   err => {
-        //     console.error(err);
-        //   }
-        // )
-      }
     },
     mounted() {
-        connect(db => {
-            db.transaction(tx => {
-                const catId = this.$store.getters.curCatId;
-                const today = moment().startOf('day');
-                const tomorrow = today.clone().date(today.date()+1);
-                if (catId !== 0) {
-                    tx.executeSql(
-                        "SELECT SUM(move) as today_move, sum(calorie) as today_calorie FROM logs_v2 WHERE cat = ? and stdt >= ? AND stdt < ?", [catId, today.unix(), tomorrow.unix()],
-                        (tx, res) => {
-                            console.log(res.rows);
-                            if (res.rows.length) {
-                                let item = res.rows.item(0);
-                                console.log(item);
-                                this.$store.commit('setTodayWheelData',[item['today_calorie'],item['today_move']])
-                            }
-                        },
-                        err => {
-                            console.error(err);
-                        }
-                    )
-                } else {
-                    this.$store.commit('setTodayWheelData', [0, 0]);
-                }
-
-            }, err => {
-                console.error(err);
-            })
-        })
 
     },
     created() {

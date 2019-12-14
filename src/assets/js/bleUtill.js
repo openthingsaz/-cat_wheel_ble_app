@@ -22,12 +22,12 @@ function sendCommand(device_id, fnCode, data, success, failure) {
   if (!device_id) {
     return;
   }
-  success = success || function () {
-  };
-  failure = failure || function () {
-  };
-  const cmd = [0x01, fnCode].concat(data);
-  const sendData = [0x02].concat(cmd).concat(getCRC(cmd)).concat([0x03]);
+  success = success || function () {};
+  failure = failure || function () {};
+  const dataLength = intToHexArr(data.length+1, 2);
+  const dataLengthD = dataLength.concat(dataLength);
+  const cmd = [fnCode].concat(data);
+  const sendData = [0x02].concat(dataLengthD).concat(cmd).concat(getCRC(cmd)).concat([0x03]);
   console.log(sendData);
   return ble.write(device_id, "6E400001-B5A3-F393-E0A9-E50E24DCCA9E", "6e400002-b5a3-f393-e0a9-e50e24dcca9e", new Uint8Array(sendData).buffer, success, failure);
 }
@@ -81,11 +81,11 @@ window.testSendCommand = function (fnCode, data) {
   sendCommand("C4:B8:AA:43:4A:FD", fnCode, data);
 };
 
-
-function intToHexArr(a) {
+function intToHexArr(a, len) {
   const b = [];
+  len = len || 4;
   let i = 0;
-  while (a > 0 || i < 4) {
+  while (a > 0 || i < len) {
     if (a > 0) {
       b.push(a % 256);
       a = a >>> 8;
@@ -134,7 +134,9 @@ function getDeviceBattery(deviceId) {
 }
 
 function setTimeSync(deviceId) {
-  sendCommand(deviceId, 0x15, intToHexArr(Math.floor(new Date().getTime()/1000)));
+  var stampVal = Math.floor(new Date().getTime()/1000);
+  console.log("setTimeSync: " +  stampVal);
+  sendCommand(deviceId, 0x15, intToHexArr(stampVal));
 }
 
 function getMoveData(deviceId) {

@@ -5,7 +5,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    battery: 30,
+    battery: -1,
     colors: localStorage.getItem('_colors') ? JSON.parse(localStorage.getItem('_colors')) : [],
     cats: localStorage.getItem('_cats') ? JSON.parse(localStorage.getItem('_cats')) : [],
     curCatId: localStorage.getItem('_curCatId') ? parseInt(localStorage.getItem('_curCatId')) : 0,
@@ -30,9 +30,9 @@ export default new Vuex.Store({
       move: 0,
       position: null,
       offset: parseInt(localStorage.getItem('_offset')) || 0,
-      reverse: JSON.parse(localStorage.getItem('_reverse')) || false,
-      term: parseInt(localStorage.getItem('_term')) || 0,
-      reqTerm: parseInt(localStorage.getItem('_req_term')) || 500
+      reverse: JSON.parse(localStorage.getItem('_reverse')) || true,
+      term: parseInt(localStorage.getItem('_term')) || 100,
+      reqTerm: parseInt(localStorage.getItem('_req_term')) || 5000
     },
   },
 
@@ -88,17 +88,17 @@ export default new Vuex.Store({
     },
 
     wheelCount(state) {
-      return Math.floor((state.wheel.move + state.wheel.todayMove)/360);
+      return Math.floor((state.wheel.move + state.wheel.todayMove)/100/1.1/Math.PI);
     },
 
     wheelMoveDistance(state) {
-      return (state.wheel.move + state.wheel.todayMove) / 360 * 1.1 * Math.PI;
+      return (state.wheel.move + state.wheel.todayMove) / 100;
     },
 
     calorie(state) {
       if (state.curCatId !== 0) {
         const cat = state.cats.find(cat => cat.id === state.curCatId);
-        return state.wheel.todayCalorie + (state.wheel.move / 360 * 1.1 * Math.PI) * (0.06 + (cat.weight-5)/100)
+        return state.wheel.todayCalorie + (state.wheel.move / 100) * (0.06 + (cat.weight-5)/100)
       } else{
         return 0
       }
@@ -166,27 +166,27 @@ export default new Vuex.Store({
     },
 
     setWheelPos(state, pos) {
-      const now = new Date().getTime()
-      let move = Math.abs(state.wheel.position - pos)
-      if (state.wheel.position === pos) {
-        return
-      }
-
-      move = move <= 180 ? move : 360 - move
-      state.wheel.move += move
-      state.wheel.position = pos
-      state.wheel.lastUpdate = now
-
-      if (!state.wheel.firstUpdate) {
-        state.wheel.firstUpdate = now
-      }
+      // const now = new Date().getTime()
+      // let move = Math.abs(state.wheel.position - pos)
+      // if (state.wheel.position === pos) {
+      //   return
+      // }
+      //
+      // move = move <= 180 ? move : 360 - move
+      // state.wheel.move += move
+      // state.wheel.position = pos
+      // state.wheel.lastUpdate = now
+      //
+      // if (!state.wheel.firstUpdate) {
+      //   state.wheel.firstUpdate = now
+      // }
     },
 
     resetTmp(state) {
       const cat = state.cats.find(cat => cat.id === state.curCatId);
       state.wheel.firstUpdate = null
       state.wheel.lastUpdate = null
-      state.wheel.todayCalorie += (state.wheel.move / 360 * 1.1 * Math.PI) * (0.06 + (cat.weight-5)/100);
+      state.wheel.todayCalorie += (state.wheel.move / 100) * (0.06 + (cat.weight-5)/100);
       state.wheel.todayMove += state.wheel.move
       state.wheel.move = 0
     },

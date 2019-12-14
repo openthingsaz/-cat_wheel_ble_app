@@ -19,10 +19,11 @@
 </template>
 
 <script>
+    import moment from 'moment'
     import Vue from 'vue'
     import {connect, db} from "./assets/js/db"
     import {Confirm} from "./assets/js/dialog"
-    import {getCRC, getDegree, getMoveData, hexArrToInt, setTimeSync} from "./assets/js/bleUtill"
+    import {getCRC, getMoveData, hexArrToInt, setTimeSync} from "./assets/js/bleUtill"
     import catHeader from './components/home/cat-header.vue'
     // import splash from './components/splash.vue';
 
@@ -67,7 +68,6 @@
                 //   this.$router.replace("/login")
                 // }
                 this.afterLogin(); // 현재 로그인 없음
-                this.wheelChecker();
             });
         },
         methods: {
@@ -81,50 +81,86 @@
                     while (true) {
                         let flag = false;
                         stxPos = buffer.indexOf(2, stxPos);
-                        const etxPos = buffer.indexOf(3, stxPos);
                         if (stxPos === -1) {
                             break;
-                        } else if (etxPos - stxPos > 8) {
-                            const cmdData = buffer.slice(stxPos + 1, etxPos - 2);
-                            const crc = getCRC(cmdData);
-                            if (crc[0] === buffer[etxPos - 2] && crc[1] === buffer[etxPos - 1]) {
+                        } else if (buffer.length > stxPos + 7) {
+                            const dataLength = hexArrToInt(buffer.slice(stxPos + 1, stxPos + 3));
+                            const dataLength2 = hexArrToInt(buffer.slice(stxPos + 3, stxPos + 5));
+                            if (
+                                dataLength === dataLength2 &&
+                                buffer.length > stxPos + dataLength + 7 &&
+                                buffer[stxPos + dataLength + 7] === 3 &&
+                                hexArrToInt(getCRC(buffer.slice(stxPos + 5, stxPos + dataLength + 7))) === 0
+                            ) {
+                                const fnCode = buffer[stxPos + 5];
+                                const cmdData = buffer.slice(stxPos + 6, stxPos + dataLength + 5);
+                                console.log("CMD IN " + buffer.splice(0, stxPos + dataLength + 8).map(a => "0x" + a.toString(16)).join(" "));
                                 flag = true;
-                                this.commandRun(cmdData[0], cmdData[1], cmdData.slice(2));
-                                buffer.splice(0, etxPos+1);
+                                stxPos = 0;
+                                this.commandRun(fnCode, cmdData);
                             }
                         }
                         if (!flag) {
-                            stxPos = 0;
+                            stxPos++;
                         }
                     }
                 }, e => console.error(e));
                 this.getMoveDataLoop();
                 setTimeSync(this.$store.getters.device.id)
             },
-            getMoveDataLoop: function() {
-                  if (this.$store.getters.device && this.$store.getters.device.id ) {
-                      getMoveData(this.$store.getters.device.id);
-                      setTimeout(()=> {
-                          this.getMoveDataLoop()
-                      }, this.$store.getters.wheel.reqTerm);
-                  }
+            getMoveDataLoop: function () {
+                if (this.$store.getters.device && this.$store.getters.device.id) {
+                    getMoveData(this.$store.getters.device.id);
+                    setTimeout(() => {
+                        this.getMoveDataLoop()
+                    }, this.$store.getters.wheel.reqTerm);
+                }
             },
-            commandRun: function (address, cmd, data) {
+            commandRun: function (cmd, data) {
                 console.log(cmd, data);
-                if (cmd === 0x01) { // GET_STATUS
-                    if (data[3] === 0x01) {
-                        console.log("STATUS SLEEP");
-                    } else if (data[3] === 0x02) {
-                        console.log("STATUS RUN");
-                    }
-                } else if (cmd === 0x04) { // GET_DEGREE
-                    this.$store.commit('setWheelPos', hexArrToInt(data) % 360);
-                } else if (cmd === 0x11) { // GET_BAT
-                    this.$store.commit('setBattery', hexArrToInt(data) % 101);
+                if (cmd === 0x11) { // GET_BAT
+                    this.$store.commit('setBattery', Math.min(hexArrToInt(data), 100));
                 } else if (cmd === 0x20) { // GET_MOVE_DATA
                     console.log(data);
-                    // this.$store.commit('setBattery', hexArrToInt(data) % 101);
+                    for (let i = 0; i < Math.floor(data.length / 12); i++) {
+                        const stPos = i * 12;
+                        this.insertMoveData(
+                            hexArrToInt(data.slice(stPos, stPos + 4)),
+                            hexArrToInt(data.slice(stPos + 4, stPos + 8)),
+                            hexArrToInt(data.slice(stPos + 8, stPos + 12)))
+                    }
+                    this.getTodayData();
                 }
+            },
+            getTodayData() {
+                connect(db => {
+                    db.transaction(tx => {
+                        const catId = this.$store.getters.curCatId;
+                        const today = moment().startOf('day');
+                        const tomorrow = today.clone().date(today.date() + 1);
+                        if (catId !== 0) {
+                            tx.executeSql(
+                                "SELECT SUM(move) as today_move, sum(calorie) as today_calorie FROM logs_v2 WHERE cat = ? and stdt >= ? AND stdt < ?", [catId, today.unix(), tomorrow.unix()],
+                                (tx, res) => {
+                                    console.log(res.rows);
+                                    if (res.rows.length) {
+                                        let item = res.rows.item(0);
+                                        console.log(item);
+                                        this.$store.commit('setTodayWheelData', [item['today_calorie'], item['today_move']])
+                                    }
+                                },
+                                err => {
+                                    console.error(err);
+                                }
+                            )
+                        } else {
+                            this.$store.commit('setTodayWheelData', [0, 0]);
+                        }
+
+                    }, err => {
+                        console.error(err);
+                    })
+                })
             },
             checkDevice: function (flag) {
                 this.connecting = true;
@@ -157,6 +193,7 @@
                 // this.afterLogin()
             },
             afterLogin() {
+                this.getTodayData();
                 ble.isEnabled(this.checkDevice, () => {
                     ble.enable(this.checkDevice);
                 });
@@ -174,28 +211,22 @@
                     })
                 }
             },
-
-            wheelChecker() {
-                setInterval(() => {
-                    const now = new Date();
-                    const cat = this.$store.getters.curCat;
-                    const wheel = this.$store.getters.wheel;
-                    const calorie = (wheel.move / 360 * 1.1 * Math.PI) * (0.06 + (cat.weight - 5) / 100);
-
-                    if (cat.id !== 0 && wheel.firstUpdate != null && (now - wheel.lastUpdate > 5000 || wheel.lastUpdate - wheel.firstUpdate > 20000)) {
-                        const args = [cat.id, Math.round(wheel.firstUpdate / 1000), Math.round((wheel.lastUpdate - wheel.firstUpdate) / 1000), wheel.move, calorie];
-                        this.$store.commit('resetTmp');
-                        connect(db => {
-                            db.transaction(tx => {
-                                console.log(`INSERT ${args}`);
-                                tx.executeSql('INSERT INTO logs_v2 VALUES (?,?,?,?,?)', args, () => {
-                                }, err => console.error(err));
-                            }, err => {
-                                console.error(err);
-                            })
-                        })
-                    }
-                }, 500);
+            insertMoveData(timestamp, move, sec) {
+                localStorage.setItem("_last_move", timestamp);
+                console.log("NOW: " + Math.floor(new Date().getTime() / 1000) + "   VAL: " + timestamp);
+                console.log(new Date(timestamp * 1000), move, sec);
+                const cat = this.$store.getters.curCat;
+                const calorie = (move / 100) * (0.06 + (cat.weight - 5) / 100);
+                if (cat.id !== 0) {
+                    const args = [cat.id, timestamp, sec, move, calorie];
+                    connect(db => db.transaction(tx => {
+                        console.log(`INSERT ${args}`);
+                        tx.executeSql('INSERT INTO logs_v2 VALUES (?,?,?,?,?)', args, () => {
+                        }, err => console.error(err));
+                    }, err => {
+                        console.error(err);
+                    }))
+                }
             }
         }
     }

@@ -16,7 +16,7 @@
         </div>
       </header>
       <div id="battery">
-        <div v-if="device">
+        <div v-if="device && battery >= 0">
           Wheel Battery
           <img :src="batteryInfo.img">
           <span :style="{color:batteryInfo.color}">{{battery}}%</span>
@@ -40,7 +40,7 @@
         </div>
 
         <div style="margin-top: 20px;">
-          <color-picker @input="onPickerInput" @change="save"/>
+          <color-picker @input="onPickerInput" @change="onPickerChange"/>
         </div>
 
       </div>
@@ -112,6 +112,16 @@
             ])
         },
         methods: {
+            onPickerChange(e) {
+                if (this.colorInfo.colorPos === 5) {
+
+                    this.save(e);
+                } else if (this.colorInfo.colorPos === 6) {
+                    this.save(e);
+                } else if (this.colorInfo.colorPos === 7) {
+                    this.save(e);
+                }
+            },
             setColorPos(idx) {
                 this.colorInfo.colorPos = idx;
                 let color;

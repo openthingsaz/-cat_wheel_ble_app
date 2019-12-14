@@ -138,7 +138,7 @@
                         if (Math.random()*100 < hourPerMap[hour]) {
                             const sec = Math.round(Math.random() * 120);
                             const move = sec * Math.round(Math.random() * 200);
-                            const calorie = (move / 360 * 1.1 * Math.PI) * (0.06 + (cat.weight-5)/100);
+                            const calorie = (move / 100) * (0.06 + (cat.weight-5)/100);
                             const args = [cat.id, stDate.unix(), sec, move, calorie]
                             console.log(stDate.format("YYYY-MM-DD HH:mm:ss"), args);
                             tx.executeSql('INSERT INTO logs_v2 VALUES (?,?,?,?,?)', args, () => {}, err => console.error(err));
@@ -160,7 +160,7 @@
                 }
                 const data = Array.from(Array(labels.length).keys()).map(i => 0);
                 for (const item of this.dataSet) {
-                    data[item.stdt] = Math.round(item.move / 360 * 1.1 * Math.PI * 10)/10;
+                    data[item.stdt] = Math.round(item.move / 10)/10;
                 }
                 this.chartData = {
                     labels,

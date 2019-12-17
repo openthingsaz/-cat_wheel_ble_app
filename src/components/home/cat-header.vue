@@ -17,6 +17,7 @@
 <!--        </template>-->
       </a>
       <div class="right">
+        <button @click="setPowerModeAlert" style="background: #fff">{{mode ? mode === 1 ? "퍼포먼스" : "절전" : ""}}</button>
         <button @click="exit"><img src="img/right_off_button.png"/></button>
       </div>
     </div>
@@ -51,6 +52,7 @@
     import moment from 'moment';
     import { mapGetters } from 'vuex'
     import {Confirm} from '../../assets/js/dialog'
+    import {setPowerMode} from '../../assets/js/bleUtill'
     export default {
         name: 'cat-header',
         data() {
@@ -63,6 +65,14 @@
               Confirm("종료하시겠습니까?", "확인", function() {
                   navigator.app.exitApp();
               })
+          },
+          setPowerModeAlert() {
+              if (this.$store.getters.device && this.$store.getters.device.id) {
+                  navigator.notification.confirm("확인 시 파워모드, 취소 시 절전모드", buttonIndex => {
+                      setPowerMode(this.$store.getters.device.id, buttonIndex !== 1)
+                  }, "파워모드 설정");
+              }
+
           }
         },
         computed: {
@@ -77,7 +87,7 @@
                 }
             },
             ...mapGetters([
-                'curCat',
+                'curCat', 'mode'
             ])
         },
         mounted() {

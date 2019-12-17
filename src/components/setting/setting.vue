@@ -44,19 +44,13 @@
           </button>
         </div>
         <div class="center">
-          <b>{{title}}</b>
+          <b>the Little Cat</b>
         </div>
         <div class="right"></div>
       </header>
       <div class="body">
         <div id="catImg">
-          <button :class="{hidden:isFirst}" @click="() => !isFirst && prevCat()" class="left">
-            <img src="img/left_arrow_cat.png"/>
-          </button>
           <img :src="catForm.image" @click="bottomSheet=true" />
-          <button :class="{hidden:isLast}" @click="() => !isLast && nextCat()" class="right">
-            <img src="img/right_arrow_cat.png"/>
-          </button>
         </div>
 
         <div id="catProfile" class="cw-list">
@@ -117,8 +111,6 @@
         </div>
       </div>
       <div class="footer">
-        <button @click="setGuest">Guest</button>
-        <button @click="deleteCat">Delete</button>
         <button @click="saveCat">Save</button>
       </div>
     </div>
@@ -169,24 +161,6 @@
             cats() {
                 return this.$store.getters.cats.sort((a, b) => a.id - b.id);
             },
-            isFirst() {
-                if (this.cats.length === 0)
-                    return true;
-
-                if (this.curViewCatId === 0)
-                    return false;
-
-                for (const cat of this.cats)
-                    if (cat.id < this.curViewCatId)
-                        return false;
-                return true;
-            },
-            isLast() {
-                return this.curViewCatId === 0;
-            },
-            title() {
-                return this.curViewCatId === 0 ? "the Little Cat" : this.catForm.name;
-            }
         },
         methods: {
             prevCat() {
@@ -336,7 +310,7 @@
   .footer {
     display: flex;
     flex: 0 0 0;
-    justify-content: space-between;
+    justify-content: flex-end;
     padding: 12px;
 
     button {

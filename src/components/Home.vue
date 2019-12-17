@@ -99,7 +99,8 @@
             'device',
             'wheelMoveDistance',
             'calorie',
-            'wheelCount'
+            'wheelCount',
+            'mode'
         ]),
     },
     methods: {

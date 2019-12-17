@@ -1,12 +1,20 @@
 <template>
   <v-app>
-    <router-view name="bluetoothConnect" @select="checkDevice"></router-view>
+    <router-view name="bluetoothConnect" @select="checkDevice" @reset="reset"></router-view>
     <!--    <router-view name="login" @login="login"></router-view>-->
     <v-content id="main">
       <div id="progress" v-show="connecting">
         <v-progress-circular
           :size="50"
           color="primary"
+          indeterminate
+        ></v-progress-circular>
+      </div>
+
+      <div id="syncing" v-show="!synced && device">
+        <v-progress-circular
+          :size="50"
+          color="white"
           indeterminate
         ></v-progress-circular>
       </div>
@@ -23,17 +31,25 @@
     import Vue from 'vue'
     import {connect, db} from "./assets/js/db"
     import {Confirm} from "./assets/js/dialog"
-    import {getCRC, getMoveData, hexArrToInt, setTimeSync} from "./assets/js/bleUtill"
+    import {getCRC, getMoveData, hexArrToInt, setTimeSync, getPowerMode} from "./assets/js/bleUtill"
     import catHeader from './components/home/cat-header.vue'
-    // import splash from './components/splash.vue';
+    import { mapGetters } from 'vuex'
+
 
     export default {
         components: {
             "cat-header": catHeader,
             // splash
         },
+        computed: {
+            ...mapGetters([
+                'device',
+            ]),
+        },
         data() {
             return {
+                synced: false,
+                getMoveDataTimeout: null,
                 ready: false,
                 connecting: false,
                 cordova: Vue.cordova,
@@ -72,6 +88,7 @@
         },
         methods: {
             onDeviceConnect: function () {
+                this.synced = false;
                 let buffer = [];
                 window.testDeviceId = this.$store.getters.device.id;
                 ble.startNotification(this.$store.getters.device.id, "6E400001-B5A3-F393-E0A9-E50E24DCCA9E", "6E400003-B5A3-F393-E0A9-E50E24DCCA9E", data => {
@@ -105,15 +122,12 @@
                         }
                     }
                 }, e => console.error(e));
-                this.getMoveDataLoop();
                 setTimeSync(this.$store.getters.device.id)
+                this.getMoveDataTimeout = setTimeout(() => this.getMoveData(), 500);
             },
-            getMoveDataLoop: function () {
+            getMoveData: function () {
                 if (this.$store.getters.device && this.$store.getters.device.id) {
                     getMoveData(this.$store.getters.device.id);
-                    setTimeout(() => {
-                        this.getMoveDataLoop()
-                    }, this.$store.getters.wheel.reqTerm);
                 }
             },
             commandRun: function (cmd, data) {
@@ -121,15 +135,25 @@
                 if (cmd === 0x11) { // GET_BAT
                     this.$store.commit('setBattery', Math.min(hexArrToInt(data), 100));
                 } else if (cmd === 0x20) { // GET_MOVE_DATA
-                    console.log(data);
+                    let lastTimestamp = localStorage.getItem("_last_move") ||-1;
                     for (let i = 0; i < Math.floor(data.length / 12); i++) {
                         const stPos = i * 12;
-                        this.insertMoveData(
-                            hexArrToInt(data.slice(stPos, stPos + 4)),
-                            hexArrToInt(data.slice(stPos + 4, stPos + 8)),
-                            hexArrToInt(data.slice(stPos + 8, stPos + 12)))
+                        const timestamp = hexArrToInt(data.slice(stPos, stPos + 4));
+                        if (lastTimestamp < timestamp) {
+                            lastTimestamp = timestamp;
+                            this.insertMoveData(
+                                timestamp,
+                                hexArrToInt(data.slice(stPos + 4, stPos + 8)),
+                                hexArrToInt(data.slice(stPos + 8, stPos + 12))
+                            )
+                        }
                     }
+                    this.synced = data.length < 84; //12바이트 7개
+                    localStorage.setItem("_last_move", lastTimestamp + "");
+                    this.getMoveDataTimeout = setTimeout(() => this.getMoveData(), 1000);
                     this.getTodayData();
+                } else if (cmd === 0x30) {
+                    this.$store.commit('setMode', hexArrToInt(data));
                 }
             },
             getTodayData() {
@@ -187,6 +211,9 @@
                     this.$router.push("connect-dialog")
                 }
             },
+            reset() {
+                clearTimeout(this.getMoveDataTimeout);
+            },
             login(user) {
                 // this.$store.commit('setUser', user)
                 // this.$router.replace("/")
@@ -212,7 +239,6 @@
                 }
             },
             insertMoveData(timestamp, move, sec) {
-                localStorage.setItem("_last_move", timestamp);
                 console.log("NOW: " + Math.floor(new Date().getTime() / 1000) + "   VAL: " + timestamp);
                 console.log(new Date(timestamp * 1000), move, sec);
                 const cat = this.$store.getters.curCat;

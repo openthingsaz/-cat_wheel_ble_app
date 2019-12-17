@@ -99,9 +99,9 @@
             palette() {
                 return [
                     "#ffffff",
-                    "#1EAA39",
-                    "#E50012",
-                    "#036EB7",
+                    "#36ff00",
+                    "#ff0018",
+                    "#0062ff",
                     this.colorInfo.color0 || "rgba(0,0,0,0)",
                     this.colorInfo.color1 || "rgba(0,0,0,0)",
                     this.colorInfo.color2 || "rgba(0,0,0,0)"

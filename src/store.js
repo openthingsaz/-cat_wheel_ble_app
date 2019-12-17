@@ -5,10 +5,11 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    mode: null,
     battery: -1,
     colors: localStorage.getItem('_colors') ? JSON.parse(localStorage.getItem('_colors')) : [],
     cats: localStorage.getItem('_cats') ? JSON.parse(localStorage.getItem('_cats')) : [],
-    curCatId: localStorage.getItem('_curCatId') ? parseInt(localStorage.getItem('_curCatId')) : 0,
+    curCatId: 1,
     isBackButtonDisabled: false,
     user: JSON.parse(localStorage.getItem('_user')),
     point: {
@@ -56,6 +57,10 @@ export default new Vuex.Store({
       return state.battery;
     },
 
+    mode(state){
+      return state.mode;
+    },
+
     cats(state){
       return state.cats;
     },
@@ -63,9 +68,8 @@ export default new Vuex.Store({
       return state.curCatId;
     },
     curCat(state){
-      return state.curCatId === 0 ?
-        {id: 0, birth: moment().format("YYYY-MM-DD"), weight: null, rib: null, leg: null, image: "img/middle_empty_cat_image.png"} :
-        state.cats.find(cat => cat.id === state.curCatId);
+      return state.cats.find(cat => cat.id === state.curCatId) ||
+        {id: 1, birth: moment().format("YYYY-MM-DD"), weight: null, rib: null, leg: null, image: "img/middle_empty_cat_image.png"};
     },
     curColor(state) {
       let color;
@@ -98,10 +102,11 @@ export default new Vuex.Store({
     calorie(state) {
       if (state.curCatId !== 0) {
         const cat = state.cats.find(cat => cat.id === state.curCatId);
-        return state.wheel.todayCalorie + (state.wheel.move / 100) * (0.06 + (cat.weight-5)/100)
-      } else{
-        return 0
+        if (cat && cat.weight) {
+          return state.wheel.todayCalorie + (state.wheel.move / 100) * (0.06 + (cat.weight-5)/100)
+        }
       }
+      return 0
     }
   },
 
@@ -198,7 +203,11 @@ export default new Vuex.Store({
     },
 
     setBattery(state, val) {
-        state.battery = val;
+      state.battery = val;
+    },
+
+    setMode(state, val) {
+      state.mode = val;
     },
 
     // setting

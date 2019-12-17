@@ -143,6 +143,14 @@ function getMoveData(deviceId) {
   sendCommand(deviceId, 0x20, intToHexArr(parseInt(localStorage.getItem('_last_move')) || 0));
 }
 
+function getPowerMode(deviceId) {
+  sendCommand(deviceId, 0x30, intToHexArr(0));
+}
+
+function setPowerMode(deviceId, isSaveMode) {
+  sendCommand(deviceId, 0x31, intToHexArr(isSaveMode ? 2 : 1));
+}
+
 export {
   stringToBytes,
   bytesToString,
@@ -161,6 +169,8 @@ export {
   intToHexArr,
   hexArrToInt,
   setTimeSync,
+  setPowerMode,
+  getPowerMode
 }
 
 

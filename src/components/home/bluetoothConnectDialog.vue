@@ -7,37 +7,7 @@
       @input="close"
     >
       <v-card>
-        <v-card-title class="headline">연결할 디바이스를 선택하세요.</v-card-title>
-        <div>
-
-          <v-list id="deviceList" two-line>
-            <template v-if="device">
-              <v-divider></v-divider>
-              <itemList
-                :device="device"
-                :connected="true"
-                @connect="onDeviceItemConnect"
-                @disconnect="onDeviceItemDisconnect"
-              ></itemList>
-            </template>
-            <v-divider></v-divider>
-            <template
-              v-for="deviceItem in deviceList"
-             >
-              <itemList
-                v-if="!device || device.id != deviceItem.id"
-                :device="deviceItem"
-                :connected="false"
-                @connect="onDeviceItemConnect"
-              ></itemList>
-
-              <v-divider></v-divider>
-            </template>
-          </v-list>
-        </div>
-        <div class="back-button-wrapper">
-          <v-btn @click="close" raised round fill>BACK</v-btn>
-        </div>
+        연결중
       </v-card>
     </v-dialog>
 </template>
@@ -62,18 +32,6 @@
         ]),
     },
     methods: {
-      onDeviceItemConnect: function (device) {
-        this.connecting = false;
-        if (device) {
-          this.$store.commit('setDevice', device);
-          this.$emit('select', true);
-        }
-        this.close()
-      },
-
-      onDeviceItemDisconnect: function () {
-        this.$store.commit('setDevice', null);
-      },
       close(){
         this.$store.commit('activeBackButton')
         this.opened = false;
@@ -81,20 +39,15 @@
           this.$router.replace("/");
         }, 250)
       },
-      backButton(){
-          if (this.opened) {
-            this.close();
-          }
-      }
     },
     mounted() {
       this.opened = true;
-      this.$store.commit('disableBackButton')
+      this.$store.commit('setDevice', null);
+      this.$emit('reset');
+      this.$store.commit('disableBackButton');
       Vue.cordova.on('deviceready', () => {
-          const self = this;
-
           // 스캔 시작
-          ble.startScanWithOptions([], { reportDuplicates: false }, function(device) {
+          ble.startScanWithOptions([], { reportDuplicates: false }, device => {
               /*
               * device 객체 형식
               * {
@@ -103,23 +56,24 @@
               *   "rssi": -79,
               * }
               * */
-              if (!device.name) {
-                  device.name = device.id;
+              if (device.name === "the Little Cat-B612") {
+                  this.deviceList.push(device);
               }
-              self.deviceList.push(device);
           }, function (a,b,c) {
               console.log(a,b,c);
           });
 
-          document.addEventListener('backbutton', this.backButton, false)
+          setTimeout(() => {
+              ble.stopScan(() => console.log('stop scanning'), () => console.log('stop scanning'));
+
+              if (this.deviceList.length) {
+                  this.deviceList.sort((a,b) => a.rssi - b.rssi);
+                  this.$store.commit('setDevice', this.deviceList[0]);
+                  this.$emit('select', true);
+              }
+              this.close();
+          }, 3000);
       })
-
-    },
-    created() {
-
-    },
-    destroyed() {
-        ble.stopScan(() => console.log('stop scanning'), () => console.log('stop scanning'));
     }
   };
 </script>

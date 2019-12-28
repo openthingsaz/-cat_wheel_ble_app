@@ -27,7 +27,7 @@
             <b>{{battery}}</b>%
           </v-progress-circular>
         </button>
-        <img src="img/right-no-device.png" class="no-device" v-else  @click="setPowerModeAlert">
+        <img src="img/right-no-device.png" class="no-device" v-else>
       </div>
     </div>
   </div>

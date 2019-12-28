@@ -7,12 +7,12 @@
           </button>
         </div>
         <div class="center">
-          <b>{{curCat.name}}</b>
+          <b>the Little Cat</b>
         </div>
         <div class="right">
-          <button @click="$router.push('tmp-setting')">
-            <img src="img/infor_butt.png"/>
-          </button>
+<!--          <button @click="$router.push('tmp-setting')">-->
+<!--            <img src="img/infor_butt.png"/>-->
+<!--          </button>-->
         </div>
       </header>
       <div id="battery">
@@ -20,6 +20,9 @@
           Wheel Battery
           <img :src="batteryInfo.img">
           <span :style="{color:batteryInfo.color}">{{battery}}%</span>
+        </div>
+        <div class="no-device" v-else>
+          Device not connected
         </div>
       </div>
       <div class="body">
@@ -39,11 +42,12 @@
           </div>
         </div>
 
-        <div style="margin-top: 20px;">
+        <div style="margin-top: 50px;">
           <color-picker @input="onPickerInput" @change="onPickerChange"/>
         </div>
 
       </div>
+      <img src="img/cat-3.png" id="cat3">
     </div>
 </template>
 <script>
@@ -132,7 +136,7 @@
                 } else if (idx === 4) {
                   color = "#000000";
                 } else if (idx < 4) {
-                    color = ["#ffffff", "#1EAA39", "#E50012", "#036EB7",][idx]
+                    color = ["#ffffff", "#36ff00", "#ff0018", "#0062ff",][idx]
                 } else {
                     if (this.colorInfo.colorPos === 5) {
                         if (this.colorInfo.color0 === null) {
@@ -198,6 +202,12 @@
     };
 </script>
 <style lang="scss" scoped>
+  #cat3 {
+    position: fixed;
+    bottom: 0;
+    right: 25px;
+    width: 100px;
+  }
   .page {
     height: 100vh;
     max-height: 100vh;
@@ -260,6 +270,10 @@
       }
     }
 
+    .no-device {
+      font-size: 16px;
+    }
+
   }
 
   .body {
@@ -268,7 +282,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-bottom: 50px;
+    padding-bottom: 90px;
   }
 
   #palette{

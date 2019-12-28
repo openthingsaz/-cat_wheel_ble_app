@@ -59,14 +59,14 @@ $nanum-font-dir: "~typeface-nanum-barun-gothic/";
   url("#{$nanum-font-dir}NanumBarunGothicBold.woff") format('woff');
 }
 
-html {
-  background-color: #000f21;
-}
+
 body{
-  background-color: #000f21;
-  font-family: arial Nanum Barun Gothic,Roboto,Noto Sans,-apple-system,BlinkMacSystemFont,sans-serif;
+  min-height: 100vh;
+  background: #262e3e url("../static/img/bg.png") no-repeat center center;
+  background-size: cover;
+  font-family: Nanum Barun Gothic,Roboto,Noto Sans,arial,-apple-system,BlinkMacSystemFont,sans-serif;
   .application{
-    font-family: arial Nanum Barun Gothic,Roboto,Noto Sans,-apple-system,BlinkMacSystemFont,sans-serif;
+    font-family: Nanum Barun Gothic,Roboto,Noto Sans,arial,-apple-system,BlinkMacSystemFont,sans-serif;
   }
 }
 
@@ -104,10 +104,17 @@ button {
 }
 
 #main{
-  background:  #000f21;
+  //background:  #000f21;
 }
 
+#app {
+  background: none;
+}
 
+ .page {
+   background: url("../static/img/bg.png") center center no-repeat;
+   background-size: cover;
+ }
 .page-leave-active, .page-enter-active {
   position: fixed;
   top:0;
@@ -143,7 +150,7 @@ button {
 
 .cw-list {
   display: block;
-  padding: 0 12px;
+  padding: 12px 12px 0 12px;
   width: 100%;
   box-sizing: border-box;
 
@@ -151,9 +158,9 @@ button {
     color: #2db7bd;
   }
   ul {
-    padding: 0 0 8px;
+    padding: 0 0 12px;
     margin-top: 8px;
-    border-bottom: 2px solid #2db7bd;
+    border-bottom: 1px solid rgba(#2db7bd, 0.7);
     li {
       height: 36px;
       background-color: #fff;
@@ -175,9 +182,9 @@ button {
           width: 60px;
           margin-right: 4px;
           height: 18px;
-          border-bottom: 2px solid #555;
+          border-bottom: 1px solid #555;
           &:focus {
-            border-bottom: 3px solid #555;
+            border-bottom: 2px solid #555;
           }
         }
       }

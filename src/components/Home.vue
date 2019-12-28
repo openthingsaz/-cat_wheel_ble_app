@@ -13,16 +13,32 @@
           <img v-else src="img/bleBtnOff.png"/>
         </div>
       </div>
-      <div style="margin-top: -18px; padding: 8px 0; overflow: hidden;">
+      <div id="circlePointer">
         <circlePointer></circlePointer>
+          <div id="wheelDp" v-if="device">
+            <div v-if="wheel.synced" class="txt">
+              <span>{{curWheelMoveDistanceStr}}</span>
+              <span>{{curWheelMoveDistanceUnit}}</span>
+            </div>
+            <div v-if="!wheel.synced">
+              <v-progress-circular
+                :size="100"
+                :width="6"
+                color="indigo darken-4"
+                indeterminate
+              ></v-progress-circular>
+            </div>
+          </div>
       </div>
     </div>
 
     <div class="footer">
       <div class="footerBtn" @click="$router.push('/chart/distance')">
         <div>
-          Today <br>
-          Distance
+          <span>
+            Traveled <br>
+            Distance
+          </span>
         </div>
         <div>
           <div>{{wheelMoveDistanceStr}}</div>
@@ -32,8 +48,11 @@
 
       <div class="footerBtn" @click="$router.push('/chart/turn')">
         <div>
-          Today <br>
-          Wheel turn
+          <span>
+            Number of <br>
+            B612 Planet<br>
+            Rotation
+          </span>
         </div>
         <div>
           <div>{{wheelCount}}</div>
@@ -42,8 +61,11 @@
 
       <div class="footerBtn" @click="$router.push('/chart/burn')">
         <div>
-          Today <br>
-          Burn
+          <span>
+            Today's <br>
+            Burnt <br>
+            Calories
+          </span>
         </div>
         <div>
           <div>{{calorieStr}}</div>
@@ -87,17 +109,29 @@
         wheelMoveDistanceUnit() {
             return this.$store.getters.wheelMoveDistance < 1000 ? 'm' : 'km';
         },
+
+        curWheelMoveDistanceStr() {
+            const distance = this.$store.getters.wheel.currentMove;
+            if (distance < 1000) {
+                return Math.round(distance);
+            } else if (distance < 10000){
+                return (distance/1000).toFixed(2);
+            } else {
+                return (distance/1000).toFixed(1);
+            }
+        },
+        curWheelMoveDistanceUnit() {
+            return this.$store.getters.wheel.currentMove < 1000 ? 'm' : 'km';
+        },
+
         calorieStr() {
             const calorie = this.$store.getters.calorie;
-            if (calorie < 100) {
-                return calorie.toFixed(2);
-            } else {
-                return calorie.toFixed(1);
-            }
+            return calorie.toFixed(1);
         },
         ...mapGetters([
             'device',
             'wheelMoveDistance',
+            'wheel',
             'calorie',
             'wheelCount',
             'mode'
@@ -129,17 +163,15 @@
 
   .body {
     flex: 1 1 auto;
-    overflow-y: scroll;
-    .top-btns{
-      margin-top: 0;
-      margin-bottom: 0;
-      padding-left: 8px;
-      padding-right: 8px;
-    }
-
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 
     .top-btns {
-      padding: 32px 32px 0 32px;
+      margin-top: 0;
+      margin-bottom: 0;
+      padding: 0 16px;
       .ledBtn{
         padding: 8px;
         img{
@@ -158,58 +190,86 @@
       }
     }
 
+    #circlePointer {
+      padding-bottom: 12px;
+      position: relative;
+    }
 
+    #wheelDp {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      .txt {
+        color: #273269;
+
+        span:first-child {
+          font-size: 80px;
+        }
+
+        span:last-child {
+          font-size: 45px;
+        }
+      }
+    }
   }
 
   .footer {
     display: flex;
     flex: 0 0 0;
     justify-content: space-between;
-    padding: 36px 24px;
+    padding: 20px 24px 30px 24px;
   }
 
 
 .footerBtn {
-  padding: 8px 0;
+  padding: 0;
   border-radius: 12px;
-  background-color: #384452;
+  background-color: rgba(#384452, 0.8);
   text-align: center;
   height: 110px;
-  width: 90px;
+  width: 100px;
   display: flex;
   flex-direction: column;
   &>div:first-child {
     flex: 0;
     color: #2db7bd;
-    font-size: 16px;
+    font-size: 14px;
+    line-height: 1.4;
+    flex-basis: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   &>div:last-child {
     flex:1 0 0;
     color: #ffffff;
     text-align: center;
-    margin-top: 4px;
     padding: 0 4px;
+    font-size: 0;
 
     &::before {
       content: '';
       display: block;
-      margin: 0 auto 12px auto;
-      width: 20%;
+      margin: 0 auto;
+      width: 75%;
       background-color: #626C77;
-      height: 2px;
+      height: 1px;
     }
-
-    font-size: 0;
     div {
       display: inline;
       font-size: 14px;
       font-weight: 500;
+      line-height: 40px;
     }
 
     span {
       font-size: 12px;
       margin-left: 2px;
+      margin-top: 2px;
+      line-height: 38px;
     }
   }
 }

@@ -7,13 +7,15 @@
         </button>
       </div>
       <div class="center">
-        <b>{{curCat.name}}</b>
+        <b>the Little Cat</b>
       </div>
       <div class="right"></div>
     </header>
     <div id="subheader">
       <div>
-        Wheel Turn
+        Number of
+        B612 Planet
+        Rotation
       </div>
     </div>
     <div id="chartButtons">
@@ -62,9 +64,11 @@
                     legend: {
                         display: false
                     },
+
                     scales: {
                         yAxes: [{
                             ticks: {
+                                fontColor: "#FFFFFF",
                                 beginAtZero: true,
                                 suggestedMin: 0,
                                 stepSize: 1,
@@ -84,6 +88,9 @@
 
                         }],
                         xAxes: [{
+                            ticks: {
+                                fontColor: "#FFFFFF",
+                            },
                             gridLines: {
                                 display: true,
                                 color: "rgba(255,255,255,0.1)",
@@ -148,10 +155,10 @@
                 }, err => console.error(err)));
 
             },
-            setChartData(){
-                let labels = [];
-                if (this.chartView === 0) {
-                    labels = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
+                        setChartData(){
+                        let labels = [];
+                        if (this.chartView === 0) {
+                            labels = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
                 } else if (this.chartView === 1) {
                     labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thr', 'Fri', 'Sat'];
                 } else if (this.chartView === 2) {

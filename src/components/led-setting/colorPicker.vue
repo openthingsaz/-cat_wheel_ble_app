@@ -13,7 +13,6 @@
             top: pickerTop === null ? '50%' : pickerTop + 'px',
             left: pickerTop === null ? '50%' : pickerLeft + 'px',
             position: 'absolute',
-
             transform: pickerTop === null ? 'translate(-4px, -4px)' : ''
            }"></span>
         </div>
@@ -26,12 +25,12 @@
   export default {
       data: function() {
           return {
-              wheelSize: 300,
+              wheelSize: Math.min(window.innerHeight-350, window.innerWidth - 50),
               pickerSize: 8,
               pickerTop: null,
               pickerLeft: null,
               image: {
-                  src: 'img/palette.png',
+                  src: 'img/palette3.png',
                   style: {
                       width: '100%', height: 'auto', 'user-select': 'none'
                   }
@@ -89,7 +88,6 @@
 
               let r = Math.sqrt(rx * rx + ry * ry)
               let angle = Math.atan2(ry, rx)
-
               angle = angle < 0 ? angle += Math.PI * 2 : angle
 
               if (r > maxR) {
@@ -103,13 +101,11 @@
 
               const h = this.hsbHue(angle)
               const s = Math.floor((r / maxR) * 100)
-
               this.pickerLeft = x - (this.pickerSize / 2)
               this.pickerTop = y - (this.pickerSize / 2)
 
               this.color = hsv2Hex(h, s, 100);
               this.$emit('input',this.color);
-              console.log('input', this.color);
           }
       }
   };

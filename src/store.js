@@ -5,6 +5,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    startTimestamp: Math.floor(new Date().getTime() / 1000),
     mode: null,
     battery: -1,
     colors: localStorage.getItem('_colors') ? JSON.parse(localStorage.getItem('_colors')) : [],
@@ -13,7 +14,7 @@ export default new Vuex.Store({
     isBackButtonDisabled: false,
     user: JSON.parse(localStorage.getItem('_user')),
     point: {
-      "angle": 0,
+      "angle": -90,
       random: {
         hex: "",
         timer: 0,
@@ -22,8 +23,10 @@ export default new Vuex.Store({
     },
     device: JSON.parse(localStorage.getItem('device')),
     wheel: {
+      synced: true,
       insertTimeout: null,
       transaction: false,
+      currentMove: 0,
       todayMove: 0,
       todayCalorie: 0,
       firstUpdate: null,
@@ -49,6 +52,10 @@ export default new Vuex.Store({
       return state.device
     },
 
+    startTime(state){
+      return state.startTime
+    },
+
     pointAngle(state) {
       return state.point.angle;
     },
@@ -69,7 +76,7 @@ export default new Vuex.Store({
     },
     curCat(state){
       return state.cats.find(cat => cat.id === state.curCatId) ||
-        {id: 1, birth: moment().format("YYYY-MM-DD"), weight: null, rib: null, leg: null, image: "img/middle_empty_cat_image.png"};
+        {id: 1, birth: moment().format("YYYY-MM-DD"), weight: null, rib: null, leg: null, image: null};
     },
     curColor(state) {
       let color;
@@ -200,6 +207,14 @@ export default new Vuex.Store({
       state.wheel.todayCalorie = data[0];
       state.wheel.todayMove = data[1];
       state.wheel.move = 0;
+    },
+
+    setCurrentMove(state, data) {
+      state.wheel.currentMove = data;
+    },
+
+    setSynced(state, flag) {
+      state.wheel.synced = flag;
     },
 
     setBattery(state, val) {

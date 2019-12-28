@@ -7,7 +7,13 @@
       @input="close"
     >
       <v-card>
-        연결중
+        <img src="img/cat-1.png" alt="" id="img1" :class="{show: !connecting}">
+        <img src="img/cat-2.png" alt="" id="img2" :class="{show: connecting}">
+        <div id="connectStatus">
+          <img id="loadingImg" src="img/loading.png" alt="" :class="{show: !connecting}">
+          <img id="loadFinishImg" src="img/load-finish.png" alt="" :class="{show: connecting}">
+          <span id="loadTxt">{{connecting ? "Connected Device" : "Device Searching"}}</span>
+        </div>
       </v-card>
     </v-dialog>
 </template>
@@ -23,7 +29,7 @@
       return {
         connecting: false,
         deviceList: [],
-        opened: false
+        opened: false,
       };
     },
     computed: {
@@ -70,9 +76,14 @@
                   this.deviceList.sort((a,b) => a.rssi - b.rssi);
                   this.$store.commit('setDevice', this.deviceList[0]);
                   this.$emit('select', true);
+                  this.connecting = true;
+                  setTimeout(() => {
+                      this.close();
+                  }, 1000)
+              } else{
+                  this.close();
               }
-              this.close();
-          }, 3000);
+          }, 2500);
       })
     }
   };
@@ -80,6 +91,11 @@
 <style lang="scss" scoped>
   #deviceList {
     padding-bottom: 68px;
+  }
+
+  .v-card {
+    background: #262e3e url("../../../static/img/bg.png") no-repeat center center;
+    background-size: cover;
   }
 
   #progress{
@@ -108,6 +124,77 @@
       display: block;
       margin: 0 auto;
     }
+  }
+
+  #img1 {
+    position: absolute;
+    width: 45%;
+    left: 5%;
+    bottom: 30px;
+    visibility: hidden;
+    transform: translateY(10px);
+    opacity: 0;
+    transition: .3s;
+
+    &.show {
+      visibility: visible;
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  #img2 {
+    position: absolute;
+    top: 55%;
+    left: 5%;
+    width: 90%;
+    transform: translateY(-50%) translateY(10px);
+    visibility: hidden;
+    opacity: 0;
+    transition: .3s;
+    &.show {
+      visibility: visible;
+      transform: translateY(-50%) translateY(0);
+      opacity: 1;
+
+    }
+  }
+
+  #connectStatus {
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    bottom: 50%;
+    padding-bottom: 40px;
+  }
+  #loadingImg, #loadFinishImg  {
+    display: none;
+    margin: 0 auto;
+    &.show {
+      display: block;
+    }
+  }
+
+  #loadingImg {
+    animation: loading 5s infinite linear;
+    @keyframes loading {
+      from {
+        transform: rotate(0deg);
+      }
+      to{
+        transform: rotate(360deg);
+      }
+    }
+  }
+
+  #loadTxt {
+    display: block;
+    text-align: center;
+    bottom: 0;
+    position: absolute;
+    left: 0;
+    right: 0;
+    color: #2eb8be;
   }
 </style>
 

@@ -7,13 +7,13 @@
         </button>
       </div>
       <div class="center">
-        <b>{{curCat.name}}</b>
+        <b>the Little Cat</b>
       </div>
       <div class="right"></div>
     </header>
     <div id="subheader">
       <div>
-        Move Distance
+        Traveled Distance
       </div>
     </div>
     <div id="chartButtons">
@@ -65,6 +65,7 @@
                     scales: {
                         yAxes: [{
                             ticks: {
+                                fontColor: "#FFFFFF",
                                 beginAtZero: true,
                                 suggestedMin: 0,
                                 stepSize: 1,
@@ -84,6 +85,9 @@
 
                         }],
                         xAxes: [{
+                            ticks: {
+                                fontColor: "#FFFFFF",
+                            },
                             gridLines: {
                                 display: true,
                                 color: "rgba(255,255,255,0.1)",

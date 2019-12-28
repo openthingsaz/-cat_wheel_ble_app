@@ -15,9 +15,13 @@
     <div id="point" :style="{
       transform: `rotate(${(pointAngle)}deg)`,
     }">
-        <div :style="{backgroundColor: curColorValue}"></div>
+        <div :style="{
+        backgroundColor: curColorValue,
+        right: offset + 'px',
+        display: curColorValue === 'rgba(0,0,0,0)' ? 'none' : 'block'
+        }"></div>
     </div>
-    <img src="img/cat_black2.png" id="catBakImg">
+    <img src="img/cat_black2.png" id="catBakImg" :style="{bottom: offset + 'px'}">
   </div>
 </template>
 <script>
@@ -41,10 +45,11 @@
 
         computed:{
             size() {
-                var per = 60;
-                var wOff = 140;
-                var hoff = 440;
-                return Math.min(this.windowHeight-hoff, Math.max(this.windowWidth*per*0.01, this.windowWidth-wOff))
+                var hoff = 390;
+                return Math.min(this.windowHeight-hoff, this.windowWidth)
+            },
+            offset() {
+                return this.size * 0.066;
             },
           wheelMoveDistance(){
             return this.$store.getters.wheelMoveDistance
@@ -64,9 +69,9 @@
           curColorValue() {
               return [
                   "#ffffff",
-                  "#1EAA39",
-                  "#E50012",
-                  "#036EB7",
+                  "#36ff00",
+                  "#ff0018",
+                  "#0062ff",
                   "rgba(0,0,0,0)",
                   this.curColor.color0 || "rgba(0,0,0,0)",
                   this.curColor.color1 || "rgba(0,0,0,0)",
@@ -139,10 +144,9 @@
 </script>
 <style lang="scss" scoped>
   #circleWrapper {
-    border: 5px solid #515253;
-    border-radius: 50%;
     position: relative;
-    box-sizing: content-box;
+    background: url("../../../static/img/circle.png") center center no-repeat;
+    background-size: contain;
   }
 
   #point{
@@ -156,12 +160,12 @@
     div{
       position: absolute;
       display: block;
-      width: 22px;
-      height: 22px;
-      bottom: -11px;
-      left: 100%;
-      transform: translateX(-9px);
+      width: 30px;
+      height: 30px;
+      bottom: -15px;
+      transform: translateX(50%);
       box-sizing: border-box;
+      border:2px solid #fff;
       background-color: #fff;
       border-radius: 50%;
       box-shadow: 0 0 4px 2px rgba(0,0,0,0.25);

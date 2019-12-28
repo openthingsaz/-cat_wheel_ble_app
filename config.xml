@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="1" id="com.fieldsolution.catwheel" ios-CFBundleVersion="1" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Cat Wheel</name>
+<widget android-versionCode="1" id="com.petding.b612" ios-CFBundleVersion="1" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>B612</name>
     <description>A Vuetify project running in Cordova</description>
     <author email="dev@cordova.apache.org" href="http://cordova.io">
     Apache Cordova Team

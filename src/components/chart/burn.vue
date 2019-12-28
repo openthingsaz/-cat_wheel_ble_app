@@ -7,13 +7,15 @@
         </button>
       </div>
       <div class="center">
-        <b>{{curCat.name}}</b>
+        <b>the Little Cat</b>
       </div>
       <div class="right"></div>
     </header>
     <div id="subheader">
       <div>
-        Calories Burned
+        Today's
+        Burnt
+        Calories
       </div>
     </div>
     <div id="chartButtons">
@@ -68,6 +70,7 @@
                                 beginAtZero: true,
                                 suggestedMin: 0,
                                 stepSize: 0.1,
+                                fontColor: '#fff',
                             },
                             scaleLabel: {
                                 display: true,
@@ -84,6 +87,9 @@
 
                         }],
                         xAxes: [{
+                            ticks: {
+                                fontColor: "#FFFFFF",
+                            },
                             gridLines: {
                                 display: true,
                                 color: "rgba(255,255,255,0.1)",

@@ -3,21 +3,13 @@
     <router-view name="bluetoothConnect" @select="checkDevice" @reset="reset"></router-view>
     <!--    <router-view name="login" @login="login"></router-view>-->
     <v-content id="main">
-      <div id="progress" v-show="connecting">
-        <v-progress-circular
-          :size="50"
-          color="primary"
-          indeterminate
-        ></v-progress-circular>
-      </div>
-
-      <div id="syncing" v-show="!synced && device">
-        <v-progress-circular
-          :size="50"
-          color="white"
-          indeterminate
-        ></v-progress-circular>
-      </div>
+<!--      <div id="progress" v-show="connecting">-->
+<!--        <v-progress-circular-->
+<!--          :size="50"-->
+<!--          color="primary"-->
+<!--          indeterminate-->
+<!--        ></v-progress-circular>-->
+<!--      </div>-->
 
       <transition name="page">
         <router-view name="page"></router-view>
@@ -48,10 +40,8 @@
         },
         data() {
             return {
-                synced: false,
                 getMoveDataTimeout: null,
                 ready: false,
-                connecting: false,
                 cordova: Vue.cordova,
                 clipped: false,
                 drawer: true,
@@ -88,7 +78,7 @@
         },
         methods: {
             onDeviceConnect: function () {
-                this.synced = false;
+                this.$store.commit('setSynced', false);
                 let buffer = [];
                 window.testDeviceId = this.$store.getters.device.id;
                 ble.startNotification(this.$store.getters.device.id, "6E400001-B5A3-F393-E0A9-E50E24DCCA9E", "6E400003-B5A3-F393-E0A9-E50E24DCCA9E", data => {
@@ -122,8 +112,10 @@
                         }
                     }
                 }, e => console.error(e));
-                setTimeSync(this.$store.getters.device.id)
-                this.getMoveDataTimeout = setTimeout(() => this.getMoveData(), 500);
+                getPowerMode();
+                setTimeout(() => setTimeSync(this.$store.getters.device.id), 500);
+                setTimeout(() => getPowerMode(this.$store.getters.device.id), 1000);
+                this.getMoveDataTimeout = setTimeout(() => this.getMoveData(), 1500);
             },
             getMoveData: function () {
                 if (this.$store.getters.device && this.$store.getters.device.id) {
@@ -148,7 +140,7 @@
                             )
                         }
                     }
-                    this.synced = data.length < 84; //12바이트 7개
+                    this.$store.commit('setSynced', data.length < 84);
                     localStorage.setItem("_last_move", lastTimestamp + "");
                     this.getMoveDataTimeout = setTimeout(() => this.getMoveData(), 1000);
                     this.getTodayData();
@@ -171,6 +163,26 @@
                                         let item = res.rows.item(0);
                                         console.log(item);
                                         this.$store.commit('setTodayWheelData', [item['today_calorie'], item['today_move']])
+                                    } else {
+                                        this.$store.commit('setTodayWheelData', [0, 0]);
+                                    }
+                                },
+                                err => {
+                                    console.error(err);
+                                }
+                            );
+
+                            const startTimestamp = this.$store.getters.startTimestamp;
+                            tx.executeSql(
+                                "SELECT SUM(move) as cur_move FROM logs_v2 WHERE cat = ? and stdt >= ?", [catId, startTimestamp],
+                                (tx, res) => {
+                                    console.log(res.rows);
+                                    if (res.rows.length) {
+                                        let item = res.rows.item(0);
+                                        console.log(item);
+                                        this.$store.commit('setCurrentMove', item['cur_move'])
+                                    } else {
+                                        this.$store.commit('setCurrentMove', 0)
                                     }
                                 },
                                 err => {
@@ -178,6 +190,7 @@
                                 }
                             )
                         } else {
+                            this.$store.commit('setCurrentMove', 0)
                             this.$store.commit('setTodayWheelData', [0, 0]);
                         }
 
@@ -187,18 +200,14 @@
                 })
             },
             checkDevice: function (flag) {
-                this.connecting = true;
                 const device = this.$store.getters.device
                 if (device && device.id) {
                     ble.isConnected(device.id, () => {
-                        this.connecting = false;
                         this.onDeviceConnect();
                     }, () => {
                         ble.connect(device.id, () => { // 연결 2회 시도
-                            this.connecting = false;
                             this.onDeviceConnect();
                         }, (e) => {
-                            this.connecting = false;
                             this.$store.commit('setDevice', null);
                             this.$router.push("connect-dialog");
                             if (flag) {
@@ -207,7 +216,6 @@
                         });
                     });
                 } else {
-                    this.connecting = false;
                     this.$router.push("connect-dialog")
                 }
             },

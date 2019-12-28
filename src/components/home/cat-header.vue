@@ -2,7 +2,6 @@
   <div class="header-wrapper">
     <div class="header">
       <div class="left">
-        <img src="img/cat_head.png">
         <div>
           <div>{{curCat.id !== 0 ? curCat.name : "guest"}}</div>
           <div>{{curCat.id !== 0 ? `${birthAsAgeStr}` : "- weeks"}}</div>
@@ -10,43 +9,28 @@
       </div>
       <a class="img" @click="$router.push('/setting')">
         <template>
-          <img :src="curCat.image"/>
+          <img :src="curCat.image || 'img/middle_empty_cat_image.png'"/>
         </template>
 <!--        <template v-else>-->
 <!--          <img src="img/middle_empty_cat_image.png" />-->
 <!--        </template>-->
       </a>
       <div class="right">
-        <button @click="setPowerModeAlert" style="background: #fff">{{mode ? mode === 1 ? "퍼포먼스" : "절전" : ""}}</button>
-        <button @click="exit"><img src="img/right_off_button.png"/></button>
+        <button class="yes-device" v-if="device && battery >= 0 && mode" @click="setPowerModeAlert">
+          <v-progress-circular
+            :size="64"
+            :width="8"
+            color="white"
+            :value="battery"
+            :rotate="275"
+          >
+            <b>{{battery}}</b>%
+          </v-progress-circular>
+        </button>
+        <img src="img/right-no-device.png" class="no-device" v-else  @click="setPowerModeAlert">
       </div>
     </div>
   </div>
-<!--    <div class="clear">-->
-<!--      <div v-if="cat" @click="$router.push('/setting')">-->
-<!--        <div class="image" :style="{'background-image': `url()`}"></div>-->
-<!--        <div class="barBg"></div>-->
-<!--        <div class="bar">-->
-<!--          <div class="nameLabel">-->
-<!--            <div class="name">{{cat.name}}</div>-->
-<!--          </div>-->
-<!--          <div class="ageLabel">-->
-<!--            <span class="age">{{birthAsAgeWeek}}</span>-->
-<!--            <span>Week</span>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div class="weightLabel">-->
-<!--          <div class="weight">-->
-<!--            {{weightBeforeDot}}.<span class="afterDot">{{weightAfterDot}}</span>-->
-<!--          </div>-->
-<!--          <div class="unit">kg</div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--      <div id="catInfoNotFound" v-else>-->
-<!--        <span v-if="$route.path==='/edit-cat-info'">고양이 정보를 설정해 주세요.</span>-->
-<!--        <v-btn raised color="white" v-else @click="$router.push('/edit-cat-info')">고양이 정보를 설정해 주세요.</v-btn>-->
-<!--      </div>-->
-<!--    </div>-->
 </template>
 <script>
     import moment from 'moment';
@@ -67,12 +51,14 @@
               })
           },
           setPowerModeAlert() {
-              if (this.$store.getters.device && this.$store.getters.device.id) {
-                  navigator.notification.confirm("확인 시 파워모드, 취소 시 절전모드", buttonIndex => {
-                      setPowerMode(this.$store.getters.device.id, buttonIndex !== 1)
-                  }, "파워모드 설정");
-              }
-
+              navigator.notification.confirm(this.$store.getters.mode === 1 ? "Do you want to change mode to save mode?" :  "Do you want to change mode to power mode?" , buttonIndex => {
+                  const isSaveMode = this.$store.getters.mode === 1 && buttonIndex === 1 || this.$store.getters.mode === 2 && buttonIndex === 2;
+                  this.$store.commit('setMode', isSaveMode ? 2 : 1);
+                  setPowerMode(
+                      this.$store.getters.device.id,
+                      isSaveMode
+                  );
+              }, "Confirm");
           }
         },
         computed: {
@@ -87,7 +73,7 @@
                 }
             },
             ...mapGetters([
-                'curCat', 'mode'
+                'curCat', 'mode', 'device', 'battery'
             ])
         },
         mounted() {
@@ -98,7 +84,7 @@
 <style lang="scss" scoped>
   .header-wrapper {
     display:flex;
-    padding: 32px;
+    padding: 40px 24px 32px 24px;
     width: 100%;
   }
 
@@ -107,20 +93,21 @@
     align-items: stretch;
     flex: 1 0 auto;
     border: 1px solid #2db7bd;
-    background-color: #093140;
-    height:84px;
-    border-radius: 42px;
-
+    background-color: rgba(#2db7bd, 0.2);
+    height:82px;
+    border-radius: 46px;
 
     .img {
-      flex: 0 0 82px;
-      width: 82px;
-      height: 82px;
+      flex: 0 0 80px;
+      width: 80px;
+      height: 80px;
       img {
         display: block;
-        width: 82px;
-        height: 82px;
+        width: 80px;
+        height: 80px;
         border-radius: 50%;
+        border: 2px solid #fff;
+        box-shadow: 0 0 10px 0 #bbdd7c;
       }
     }
 
@@ -129,16 +116,19 @@
       display: flex;
       align-items: center;
 
-      img {
-        width: 28px;
-        display: block;
-        margin-left: 12px;
-      }
-
       &>div {
-        margin-left: 16px;
-        line-height: 20px;
+        text-align: center;
+        margin-left: 20px;
+        line-height: 1;
         color: #ffffff;
+        &>div:first-child {
+          font-size: 16px;
+          margin-bottom: 4px;
+        }
+
+        &>div:last-child {
+
+        }
       }
     }
 
@@ -147,16 +137,16 @@
       justify-content: flex-end;
       align-items: center;
       display: flex;
-      button {
-        width: 60px;
-        height: 60px;
-        margin-right: 8px;
+      .no-device {
+        width: 80px;
+        height: 80px;
+      }
+
+      .yes-device {
+        width: 80px;
+        height: 80px;
         outline: none;
         padding: 0;
-        img {
-          width: 60px;
-          height: 60px;
-        }
       }
     }
   }
@@ -165,15 +155,15 @@
     header{
       position: relative;
       margin-top: 12px;
-      height: 90px;
+      height: 80px;
     }
 
     .image {
         position: relative;
         z-index: 2;
         float: left;
-        width: 90px;
-        height: 90px;
+        width: 80px;
+        height: 80px;
         margin-left: 12px;
         overflow: hidden;
         border: 12px solid #fff;
@@ -183,74 +173,11 @@
         background-position: center center;
     }
 
-    .barBg{
-        z-index: 1;
-        position: absolute;
-        top: 0;
-        left: 55px;
-        right: 55px;
-        background-color: #ffffff;
-        height: 24px;
-    }
-    .bar{
-        z-index: 3;
-        position: absolute;
-        top: 0;
-        left: 94px;
-        right: 94px;
-        height: 24px;
-        line-height: 24px;
-        color: #0090ff;
-        font-size: 16px;
-        letter-spacing: -1px;
-        .nameLabel{
-            float: left;
-        }
-
-        .ageLabel{
-            float: right;
-        }
-    }
-
-    .weightLabel{
-        position: relative;
-        z-index: 2;
-        float: right;
-        width: 90px;
-        height: 90px;
-        border-radius: 50%;
-        margin-right: 12px;
-        background-color: #ffffff;
-        color: #0090ff;
-
-        .weight{
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 4px;
-            line-height:96px;
-            font-size: 36px;
-            text-align: center;
-            letter-spacing: -2px;
-            span{
-                font-size: 18px;
-            }
-        }
-
-        .unit{
-            position: absolute;
-            right: 12px;
-            top: 15px;
-            font-size: 20px;
-        }
-    }
-
   #catInfoNotFound{
     color: #fff;
     font-size: 18px;
     text-align: center;
-    line-height: 90px;
+    line-height: 80px;
   }
 </style>
 

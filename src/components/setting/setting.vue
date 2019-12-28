@@ -50,7 +50,7 @@
       </header>
       <div class="body">
         <div id="catImg">
-          <img :src="catForm.image" @click="bottomSheet=true" />
+          <img :src="catForm.image|| 'img/profile.png'" @click="bottomSheet=true" :class="{big: !catForm.image}" />
         </div>
 
         <div id="catProfile" class="cw-list">
@@ -77,8 +77,9 @@
           <div class="cw-list-title">
             Learn the Cat <b>BMI</b> <span class="sub">(Body Mass Index)</span>
           </div>
-
-          <img src="img/learn_the_cat_bmi.png" id="BMIInfo" />
+          <div id="figure">
+            <img src="img/bmi.png" id="BMIInfo" />
+          </div>
           <ul>
             <li>
               <span class="cw-list-label">Body weight</span>
@@ -187,7 +188,7 @@
                     if (cat.id === this.curViewCatId) {
                         if (idx +1 === this.cats.length) {
                             this.curViewCatId = 0;
-                            this.catForm = {id: 0, birth: moment().format("YYYY-MM-DD"), weight: null, rib: null, leg: null, image: "img/middle_empty_cat_image.png"};
+                            this.catForm = {id: 0, birth: moment().format("YYYY-MM-DD"), weight: null, rib: null, leg: null, image: "img/profile.png"};
                         } else {
                             this.curViewCatId = this.cats[idx + 1].id;
                             this.catForm = this.cats.find(item => item.id === this.curViewCatId);
@@ -210,7 +211,7 @@
 
                     this.$store.commit('deleteCat', this.curViewCatId);
                     this.curViewCatId = 0;
-                    this.catForm = {id: 0, birth: moment().format("YYYY-MM-DD"), weight: null, rib: null, leg: null, image: "img/middle_empty_cat_image.png"};
+                    this.catForm = {id: 0, birth: moment().format("YYYY-MM-DD"), weight: null, rib: null, leg: null, image: "img/profile.png"};
                 })
             },
             saveCat() {
@@ -250,7 +251,7 @@
                 this.bottomSheet = false;
             },
             deleteImage() {
-                this.catForm.image = "img/middle_empty_cat_image.png";
+                this.catForm.image = null;
                 this.bottomSheet = false;
             }
         }
@@ -336,6 +337,10 @@
       border-radius: 50%;
       margin: 0 auto;
       display: block;
+
+      &.big {
+        transform: scale(1.35);
+      }
     }
 
     &>button {
@@ -368,13 +373,19 @@
     .border-top {
       border-top: 1px solid #ddd;
     }
-  }
-
-  #BMIInfo {
-    display: block;
-    margin: 4px auto;
-    box-sizing: border-box;
-    width: 72%;
+    #figure {
+      text-align: right;
+      background: url("../../../static/img/cat-4.png") left bottom no-repeat;
+      background-size: 90px;
+      height: 160px;
+      img {
+        box-sizing: border-box;
+        width: 220px;
+      }
+    }
+    ul {
+      margin-top: 0;
+    }
   }
 
 

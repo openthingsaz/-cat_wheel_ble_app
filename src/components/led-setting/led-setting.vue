@@ -194,7 +194,7 @@
             document.addEventListener("resize", this.resize);
         },
         mounted(){
-            getDeviceBattery(this.$store.getters.device && this.$store.getters.device.id)
+
         },
         destroyed() {
             document.removeEventListener("resize", this.resize);

@@ -23,7 +23,7 @@
     import Vue from 'vue'
     import {connect, db} from "./assets/js/db"
     import {Confirm} from "./assets/js/dialog"
-    import {getCRC, getMoveData, hexArrToInt, setTimeSync, getPowerMode} from "./assets/js/bleUtill"
+    import {getCRC, getMoveData, hexArrToInt, setTimeSync, getPowerMode, getDeviceBattery} from "./assets/js/bleUtill"
     import catHeader from './components/home/cat-header.vue'
     import { mapGetters } from 'vuex'
 
@@ -41,6 +41,7 @@
         data() {
             return {
                 getMoveDataTimeout: null,
+                getDeviceBatteryInterval: null,
                 ready: false,
                 cordova: Vue.cordova,
                 clipped: false,
@@ -116,6 +117,16 @@
                 setTimeout(() => setTimeSync(this.$store.getters.device.id), 500);
                 setTimeout(() => getPowerMode(this.$store.getters.device.id), 1000);
                 this.getMoveDataTimeout = setTimeout(() => this.getMoveData(), 1500);
+                this.getDeviceBatteryLoop();
+            },
+            getDeviceBatteryLoop: function(){
+                if (this.getDeviceBatteryInterval) {
+                    clearInterval(this.getDeviceBatteryInterval);
+                }
+                setTimeout(() => {
+                    getDeviceBattery(this.$store.getters.device && this.$store.getters.device.id);
+                    this.getDeviceBatteryInterval = setInterval(() => getDeviceBattery(this.$store.getters.device && this.$store.getters.device.id), 10000);
+                }, 100);
             },
             getMoveData: function () {
                 if (this.$store.getters.device && this.$store.getters.device.id) {

@@ -205,8 +205,8 @@
   #cat3 {
     position: fixed;
     bottom: 0;
-    right: 25px;
-    width: 100px;
+    right: 12px;
+    width: 95px;
   }
   .page {
     height: 100vh;

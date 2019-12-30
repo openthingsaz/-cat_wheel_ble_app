@@ -219,7 +219,7 @@
     display: flex;
     flex: 0 0 0;
     justify-content: space-between;
-    padding: 20px 24px 30px 24px;
+    padding: 20px 15px 15px 15px;
   }
 
 
@@ -228,16 +228,16 @@
   border-radius: 12px;
   background-color: rgba(#384452, 0.8);
   text-align: center;
-  height: 110px;
-  width: 100px;
+  height: 125px;
+  width: 112px;
   display: flex;
   flex-direction: column;
   &>div:first-child {
     flex: 0;
     color: #2db7bd;
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.4;
-    flex-basis: 70px;
+    flex-basis: 80px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -260,13 +260,13 @@
     }
     div {
       display: inline;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 500;
       line-height: 40px;
     }
 
     span {
-      font-size: 12px;
+      font-size: 14px;
       margin-left: 2px;
       margin-top: 2px;
       line-height: 38px;

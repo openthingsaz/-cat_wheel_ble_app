@@ -118,16 +118,16 @@
 
       &>div {
         text-align: center;
-        margin-left: 20px;
+        margin: 0 auto;
         line-height: 1;
         color: #ffffff;
         &>div:first-child {
-          font-size: 16px;
+          font-size: 18px;
           margin-bottom: 4px;
         }
 
         &>div:last-child {
-
+          font-size: 16px;
         }
       }
     }

@@ -26,11 +26,11 @@
       data: function() {
           return {
               wheelSize: Math.min(window.innerHeight-350, window.innerWidth - 50),
-              pickerSize: 8,
+              pickerSize: 12,
               pickerTop: null,
               pickerLeft: null,
               image: {
-                  src: 'img/palette3.png',
+                  src: 'img/palette.png',
                   style: {
                       width: '100%', height: 'auto', 'user-select': 'none'
                   }

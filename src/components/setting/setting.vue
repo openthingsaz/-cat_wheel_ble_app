@@ -68,7 +68,8 @@
             <li>
               <span class="cw-list-label">Birthday</span>
               <span class="cw-list-value" style="overflow: hidden">
-                <input class="cw-list-input" style="margin-right: -20px; width: 110px; border:none" type="date" v-model="catForm.birth">
+                <input type="date" ref="birthInput" v-model="catForm.birth" style="visibility: hidden">
+                <input class="cw-list-input" style=" width: 90px;" type="text" v-model="catForm.birth" @click="dateFocus" readonly>
               </span>
             </li>
           </ul>
@@ -253,6 +254,10 @@
             deleteImage() {
                 this.catForm.image = null;
                 this.bottomSheet = false;
+            },
+            dateFocus: function() {
+                console.log(this.$refs.birthInput);
+                this.$refs.birthInput.click()
             }
         }
     };
@@ -374,13 +379,15 @@
       border-top: 1px solid #ddd;
     }
     #figure {
-      text-align: right;
       background: url("../../../static/img/cat-4.png") left bottom no-repeat;
       background-size: 90px;
       height: 160px;
+      padding-left: 100px;
+      text-align: center;
       img {
         box-sizing: border-box;
-        width: 220px;
+        height: 120px;
+        margin-top: 20px;
       }
     }
     ul {

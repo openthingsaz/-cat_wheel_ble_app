@@ -8,11 +8,15 @@
     >
       <v-card>
         <img src="img/cat-1.png" alt="" id="img1" :class="{show: !connecting}">
-        <img src="img/cat-2.png" alt="" id="img2" :class="{show: connecting}">
+        <div id="img2" :class="{show: connecting}">
+          <div class="shine"></div>
+          <img src="img/cat-2.png" alt="" >
+        </div>
         <div id="connectStatus">
           <img id="loadingImg" src="img/loading.png" alt="" :class="{show: !connecting}">
           <img id="loadFinishImg" src="img/load-finish.png" alt="" :class="{show: connecting}">
-          <span id="loadTxt">{{connecting ? "Connected Device" : "Device Searching"}}</span>
+          <span id="loadTxt" @click="connecting=!connecting">{{connecting ? "Connected Device" : "Device Searching"}}</span>
+<!--          <span id="loadTxt">{{connecting ? "Connected Device" : "Device Searching"}}</span>-->
         </div>
       </v-card>
     </v-dialog>
@@ -28,7 +32,6 @@
     data: function () {
       return {
         connecting: false,
-        deviceList: [],
         opened: false,
       };
     },
@@ -53,6 +56,7 @@
       this.$store.commit('disableBackButton');
       Vue.cordova.on('deviceready', () => {
           // 스캔 시작
+          const deviceList = [];
           ble.startScanWithOptions([], { reportDuplicates: false }, device => {
               /*
               * device 객체 형식
@@ -63,8 +67,9 @@
               * }
               * */
               if (device.name === "the Little Cat-B612") {
-                  this.deviceList.push(device);
+                  deviceList.push(device);
               }
+              // alert(`#${device.name || "NO_NAME"}#  ${device.name === "the Little Cat-B612" ? "is match" : "is not match"}\nID:${device.id}`);
           }, function (a,b,c) {
               console.log(a,b,c);
           });
@@ -72,14 +77,15 @@
           setTimeout(() => {
               ble.stopScan(() => console.log('stop scanning'), () => console.log('stop scanning'));
 
-              if (this.deviceList.length) {
-                  this.deviceList.sort((a,b) => a.rssi - b.rssi);
-                  this.$store.commit('setDevice', this.deviceList[0]);
+              if (deviceList.length) {
+                  debugger
+                  deviceList.sort((a,b) => a.rssi - b.rssi);
+                  this.$store.commit('setDevice', deviceList[0]);
                   this.$emit('select', true);
                   this.connecting = true;
                   setTimeout(() => {
                       this.close();
-                  }, 1000)
+                  }, 2000)
               } else{
                   this.close();
               }
@@ -135,6 +141,18 @@
     transform: translateY(10px);
     opacity: 0;
     transition: .3s;
+    animation: float 3s ease-in-out infinite;
+    @keyframes float {
+      0% {
+        transform: translateY(10px);
+      }
+      50% {
+        transform: translateY(0px);
+      }
+      100% {
+        transform: translateY(10px);
+      }
+    }
 
     &.show {
       visibility: visible;
@@ -155,7 +173,37 @@
       visibility: visible;
       transform: translateY(-50%) translateY(0);
       opacity: 1;
-
+      .shine {
+        &::after {
+          box-shadow: 0 0 30px 40px rgba(255,255,145,.25);
+          transition: .7s .4s;
+        }
+      }
+    }
+    img {
+      display: block;
+      width: 100%;
+    }
+    .shine {
+      overflow: hidden;
+      position: absolute;
+      top: 5%;
+      left: 8%;
+      right: 5%;
+      bottom: 14%;
+      border-radius: 49%;
+      &::after {
+        content: "";
+        display: block;
+        position: absolute;
+        border-radius: 50%;
+        top: -2%;
+        right: -16%;
+        width: 47%;
+        height: 45%;
+        background-color: rgba(255,255,145,.4);
+        box-shadow: 0 0 10px 0 rgba(255,255,145,.4);
+      }
     }
   }
 

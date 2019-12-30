@@ -15,8 +15,8 @@
         <div id="connectStatus">
           <img id="loadingImg" src="img/loading.png" alt="" :class="{show: !connecting}">
           <img id="loadFinishImg" src="img/load-finish.png" alt="" :class="{show: connecting}">
-          <span id="loadTxt" @click="connecting=!connecting">{{connecting ? "Connected Device" : "Device Searching"}}</span>
-<!--          <span id="loadTxt">{{connecting ? "Connected Device" : "Device Searching"}}</span>-->
+<!--          <span id="loadTxt" @click="connecting=!connecting">{{connecting ? "Connected Device" : "Device Searching"}}</span>-->
+          <span id="loadTxt">{{connecting ? "Connected Device" : "Device Searching"}}</span>
         </div>
       </v-card>
     </v-dialog>

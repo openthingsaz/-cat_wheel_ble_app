@@ -153,7 +153,7 @@
                     }
                     this.$store.commit('setSynced', data.length < 84);
                     localStorage.setItem("_last_move", lastTimestamp + "");
-                    this.getMoveDataTimeout = setTimeout(() => this.getMoveData(), 1000);
+                    this.getMoveDataTimeout = setTimeout(() => this.getMoveData(), 1500);
                     this.getTodayData();
                 } else if (cmd === 0x30) {
                     this.$store.commit('setMode', hexArrToInt(data));
@@ -169,7 +169,6 @@
                             tx.executeSql(
                                 "SELECT SUM(move) as today_move, sum(calorie) as today_calorie FROM logs_v2 WHERE cat = ? and stdt >= ? AND stdt < ?", [catId, today.unix(), tomorrow.unix()],
                                 (tx, res) => {
-                                    console.log(res.rows);
                                     if (res.rows.length) {
                                         let item = res.rows.item(0);
                                         console.log(item);
@@ -184,13 +183,13 @@
                             );
 
                             const startTimestamp = this.$store.getters.startTimestamp;
+                            console.log(startTimestamp);
+                            console.log(new Date(startTimestamp * 1000));
                             tx.executeSql(
                                 "SELECT SUM(move) as cur_move FROM logs_v2 WHERE cat = ? and stdt >= ?", [catId, startTimestamp],
                                 (tx, res) => {
-                                    console.log(res.rows);
                                     if (res.rows.length) {
                                         let item = res.rows.item(0);
-                                        console.log(item);
                                         this.$store.commit('setCurrentMove', item['cur_move'])
                                     } else {
                                         this.$store.commit('setCurrentMove', 0)
@@ -258,14 +257,14 @@
                 }
             },
             insertMoveData(timestamp, move, sec) {
-                console.log("NOW: " + Math.floor(new Date().getTime() / 1000) + "   VAL: " + timestamp);
-                console.log(new Date(timestamp * 1000), move, sec);
+                // console.log("NOW: " + Math.floor(new Date().getTime() / 1000) + "   VAL: " + timestamp);
+                // console.log(new Date(timestamp * 1000), move, sec);
                 const cat = this.$store.getters.curCat;
                 const calorie = (move / 100) * (0.06 + (cat.weight - 5) / 100);
                 if (cat.id !== 0) {
                     const args = [cat.id, timestamp, sec, move, calorie];
                     connect(db => db.transaction(tx => {
-                        console.log(`INSERT ${args}`);
+                        // console.log(`INSERT ${args}`);
                         tx.executeSql('INSERT INTO logs_v2 VALUES (?,?,?,?,?)', args, () => {
                         }, err => console.error(err));
                     }, err => {

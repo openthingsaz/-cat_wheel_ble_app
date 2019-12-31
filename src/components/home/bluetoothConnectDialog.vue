@@ -50,10 +50,20 @@
       },
     },
     mounted() {
-      this.opened = true;
-      this.$store.commit('setDevice', null);
-      this.$emit('reset');
       this.$store.commit('disableBackButton');
+      if (this.$store.getters.device) {
+          ble.disconnect(this.$store.getters.device.id, function () {
+              
+          }, function () {
+              
+          });
+          this.$store.commit('setDevice', null);
+          this.$emit('reset');
+          this.close();
+          return;
+      }
+
+      this.opened = true;
       Vue.cordova.on('deviceready', () => {
           // 스캔 시작
           const deviceList = [];
@@ -66,7 +76,7 @@
               *   "rssi": -79,
               * }
               * */
-              if (device.name === "the Little Cat-B612") {
+              if (device.name && device.name.trim() === "the Little Cat-B612") {
                   deviceList.push(device);
               }
               // alert(`#${device.name || "NO_NAME"}#  ${device.name === "the Little Cat-B612" ? "is match" : "is not match"}\nID:${device.id}`);

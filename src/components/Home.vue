@@ -8,7 +8,7 @@
         <div class="ledBtn">
           <img src="img/ledBtn.png" @click="$router.push('/led-setting')"/>
         </div>
-        <div class="bleBtn item-right" @click="$router.push('/connect-dialog')">
+        <div class="bleBtn item-right" @click="onConnectBtnClick">
           <img v-if="device" src="img/bleBtnOn.png"/>
           <img v-else src="img/bleBtnOff.png"/>
         </div>
@@ -17,6 +17,7 @@
         <circlePointer></circlePointer>
           <div id="wheelDp" v-if="device">
             <div v-if="wheel.synced" class="txt">
+<!--            <div class="txt">-->
               <span>{{curWheelMoveDistanceStr}}</span>
               <span>{{curWheelMoveDistanceUnit}}</span>
             </div>
@@ -111,7 +112,7 @@
         },
 
         curWheelMoveDistanceStr() {
-            const distance = this.$store.getters.wheel.currentMove;
+            const distance = this.$store.getters.wheel.currentMove/100;
             if (distance < 1000) {
                 return Math.round(distance);
             } else if (distance < 10000){
@@ -121,7 +122,7 @@
             }
         },
         curWheelMoveDistanceUnit() {
-            return this.$store.getters.wheel.currentMove < 1000 ? 'm' : 'km';
+            return (this.$store.getters.wheel.currentMove/100) < 1000 ? 'm' : 'km';
         },
 
         calorieStr() {
@@ -138,7 +139,9 @@
         ]),
     },
     methods: {
-
+      onConnectBtnClick: function () {
+          this.$router.push('connect-dialog');
+      }
     },
     mounted() {
 

@@ -52,8 +52,8 @@ export default new Vuex.Store({
       return state.device
     },
 
-    startTime(state){
-      return state.startTime
+    startTimestamp(state){
+      return state.startTimestamp
     },
 
     pointAngle(state) {
@@ -108,10 +108,7 @@ export default new Vuex.Store({
 
     calorie(state) {
       if (state.curCatId !== 0) {
-        const cat = state.cats.find(cat => cat.id === state.curCatId);
-        if (cat && cat.weight) {
-          return state.wheel.todayCalorie + (state.wheel.move / 100) * (0.06 + (cat.weight-5)/100)
-        }
+        return state.wheel.todayCalorie;
       }
       return 0
     }

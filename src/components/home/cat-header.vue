@@ -16,7 +16,8 @@
 <!--        </template>-->
       </a>
       <div class="right">
-        <button class="yes-device" v-if="device && battery >= 0 && mode" @click="setPowerModeAlert">
+<!--        <button class="yes-device" v-if="device && battery >= 0 && mode" @click="setPowerModeAlert">-->
+        <button class="yes-device" v-if="device && battery >= 0">
           <v-progress-circular
             :size="64"
             :width="8"

@@ -172,7 +172,7 @@
                                     if (res.rows.length) {
                                         let item = res.rows.item(0);
                                         console.log(item);
-                                        this.$store.commit('setTodayWheelData', [item['today_calorie'], item['today_move']])
+                                        this.$store.commit('setTodayWheelData', [item['today_calorie'] || 0, item['today_move'] || 0])
                                     } else {
                                         this.$store.commit('setTodayWheelData', [0, 0]);
                                     }

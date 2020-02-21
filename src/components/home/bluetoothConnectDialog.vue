@@ -53,9 +53,9 @@
       this.$store.commit('disableBackButton');
       if (this.$store.getters.device) {
           ble.disconnect(this.$store.getters.device.id, function () {
-              
+
           }, function () {
-              
+
           });
           this.$store.commit('setDevice', null);
           this.$emit('reset');

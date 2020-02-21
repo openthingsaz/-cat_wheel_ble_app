@@ -16,19 +16,19 @@
       <div id="circlePointer">
         <circlePointer></circlePointer>
           <div id="wheelDp" v-if="device">
-            <div v-if="wheel.synced" class="txt">
-<!--            <div class="txt">-->
+<!--            <div v-if="wheel.synced" class="txt">-->
+            <div class="txt">
               <span>{{curWheelMoveDistanceStr}}</span>
               <span>{{curWheelMoveDistanceUnit}}</span>
             </div>
-            <div v-if="!wheel.synced">
-              <v-progress-circular
-                :size="100"
-                :width="6"
-                color="indigo darken-4"
-                indeterminate
-              ></v-progress-circular>
-            </div>
+<!--            <div v-if="!wheel.synced">-->
+<!--              <v-progress-circular-->
+<!--                :size="100"-->
+<!--                :width="6"-->
+<!--                color="indigo darken-4"-->
+<!--                indeterminate-->
+<!--              ></v-progress-circular>-->
+<!--            </div>-->
           </div>
       </div>
     </div>

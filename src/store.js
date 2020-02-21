@@ -108,7 +108,8 @@ export default new Vuex.Store({
 
     calorie(state) {
       if (state.curCatId !== 0) {
-        return state.wheel.todayCalorie;
+        const cat =  state.cats.find(cat => cat.id === state.curCatId);
+        return state.wheel.todayCalorie + ((state.wheel.move / 100) * (0.06 + (cat.weight - 5) / 100));
       }
       return 0
     }
@@ -174,32 +175,6 @@ export default new Vuex.Store({
       localStorage.removeItem("_cat")
     },
 
-    setWheelPos(state, pos) {
-      // const now = new Date().getTime()
-      // let move = Math.abs(state.wheel.position - pos)
-      // if (state.wheel.position === pos) {
-      //   return
-      // }
-      //
-      // move = move <= 180 ? move : 360 - move
-      // state.wheel.move += move
-      // state.wheel.position = pos
-      // state.wheel.lastUpdate = now
-      //
-      // if (!state.wheel.firstUpdate) {
-      //   state.wheel.firstUpdate = now
-      // }
-    },
-
-    resetTmp(state) {
-      const cat = state.cats.find(cat => cat.id === state.curCatId);
-      state.wheel.firstUpdate = null
-      state.wheel.lastUpdate = null
-      state.wheel.todayCalorie += (state.wheel.move / 100) * (0.06 + (cat.weight-5)/100);
-      state.wheel.todayMove += state.wheel.move
-      state.wheel.move = 0
-    },
-
     setTodayWheelData(state, data) {
       state.wheel.todayCalorie = data[0];
       state.wheel.todayMove = data[1];
@@ -208,6 +183,10 @@ export default new Vuex.Store({
 
     setCurrentMove(state, data) {
       state.wheel.currentMove = data;
+    },
+
+    setMove(state, data) {
+      state.wheel.move = data;
     },
 
     setSynced(state, flag) {

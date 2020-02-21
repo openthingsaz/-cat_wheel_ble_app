@@ -23,7 +23,7 @@
     import Vue from 'vue'
     import {connect, db} from "./assets/js/db"
     import {Confirm} from "./assets/js/dialog"
-    import {getCRC, getMoveData, hexArrToInt, setTimeSync, getPowerMode, getDeviceBattery} from "./assets/js/bleUtill"
+    import {getCRC, getMoveData, getDegree, hexArrToInt, setTimeSync, getPowerMode, getDeviceBattery} from "./assets/js/bleUtill"
     import catHeader from './components/home/cat-header.vue'
     import { mapGetters } from 'vuex'
 
@@ -53,7 +53,14 @@
                 miniVariant: false,
                 right: true,
                 rightDrawer: false,
-                title: 'Vuetify.js'
+                title: 'Vuetify.js',
+                degree: {
+                  firstMoveDt: -1,
+                  lastMoveDt: -1,
+                  move: -1,
+                  pos: -1,
+                  isMoving: false
+                }
             }
         },
         created() {
@@ -113,10 +120,10 @@
                         }
                     }
                 }, e => console.error(e));
-                getPowerMode();
-                setTimeout(() => setTimeSync(this.$store.getters.device.id), 500);
-                setTimeout(() => getPowerMode(this.$store.getters.device.id), 1000);
-                this.getMoveDataTimeout = setTimeout(() => this.getMoveData(), 1500);
+                // getPowerMode();
+                // setTimeout(() => setTimeSync(this.$store.getters.device.id), 500);
+                // setTimeout(() => getPowerMode(this.$store.getters.device.id), 1000);
+                this.getMoveDataTimeout = setInterval(() => this.getMoveData(), 1500);
                 this.getDeviceBatteryLoop();
             },
             getDeviceBatteryLoop: function(){
@@ -125,19 +132,66 @@
                 }
                 setTimeout(() => {
                     getDeviceBattery(this.$store.getters.device && this.$store.getters.device.id);
-                    this.getDeviceBatteryInterval = setInterval(() => getDeviceBattery(this.$store.getters.device && this.$store.getters.device.id), 10000);
+                    this.getDeviceBatteryInterval = setInterval(() => getDeviceBattery(this.$store.getters.device && this.$store.getters.device.id), 20000);
                 }, 100);
             },
             getMoveData: function () {
                 if (this.$store.getters.device && this.$store.getters.device.id) {
-                    getMoveData(this.$store.getters.device.id);
+                    getDegree(this.$store.getters.device.id);
+                    // getMoveData(this.$store.getters.device.id);
                 }
             },
             commandRun: function (cmd, data) {
                 console.log(cmd, data);
                 if (cmd === 0x11) { // GET_BAT
                     this.$store.commit('setBattery', Math.min(hexArrToInt(data), 100));
-                } else if (cmd === 0x20) { // GET_MOVE_DATA
+                } else if (cmd === 0x04) {
+                  const pos = hexArrToInt(data);
+                  const now = Math.round(new Date()/1000);
+                  console.log("DEGREE: " + pos);
+                  console.log(JSON.parse(JSON.stringify(this.degree)));
+                  console.log(this.$store.getters.wheel.move);
+
+                  if (this.degree.isMoving) {
+                    if (this.degree.pos === pos) {
+                      this.degree.isMoving = false;
+                      this.insertMoveData(
+                        now,
+                        Math.round((this.degree.move/360) * 110 * Math.PI),
+                        Math.round((now - this.degree.firstMoveDt)/1000)
+                      );
+                      this.degree.firstMoveDt = -1;
+                      this.degree.lastMoveDt = -1;
+                      this.degree.move = -1;
+                      this.getTodayData();
+                      // resetTmpData
+                    } else {
+                      let move = Math.abs(this.degree.pos - pos);
+                      move = move > 180 ? 360 - move : move;
+                      this.degree.lastMoveDt = now;
+                      this.degree.move+=move;
+                      const distance = Math.round((this.degree.move/360) * 110 * Math.PI);
+                      this.$store.commit('setMove', distance);
+                    }
+
+                  } else {
+                    if (this.degree.pos !== pos && !this.degree.isMoving) {
+                      this.degree.isMoving = true;
+                      this.degree.firstMoveDt = now;
+                      this.degree.lastMoveDt = now;
+                      this.degree.move = 0;
+                    }
+                  }
+                  this.degree.pos=pos;
+
+                  //
+                  //
+                  //
+                  //   let move = Math.abs(this.degree.pos - pos);
+
+                    // this.getMoveDataTimeout = setTimeout(() => this.getMoveData(), 1500);
+
+                }  else if (cmd === 0x20) { // GET_MOVE_DATA
                     let lastTimestamp = localStorage.getItem("_last_move") ||-1;
                     for (let i = 0; i < Math.floor(data.length / 12); i++) {
                         const stPos = i * 12;
@@ -153,7 +207,7 @@
                     }
                     this.$store.commit('setSynced', data.length < 84);
                     localStorage.setItem("_last_move", lastTimestamp + "");
-                    this.getMoveDataTimeout = setTimeout(() => this.getMoveData(), 1500);
+                    // this.getMoveDataTimeout = setTimeout(() => this.getMoveData(), 1500);
                     this.getTodayData();
                 } else if (cmd === 0x30) {
                     this.$store.commit('setMode', hexArrToInt(data));
@@ -230,7 +284,7 @@
                 }
             },
             reset() {
-                clearTimeout(this.getMoveDataTimeout);
+                clearInterval(this.getMoveDataTimeout);
             },
             login(user) {
                 // this.$store.commit('setUser', user)

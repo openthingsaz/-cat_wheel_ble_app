@@ -62,7 +62,6 @@
           wheelMoveDistanceUnit(){
             return this.wheelMoveDistance < 1000 ? 'm' : 'km'
           },
-
           calorie(){
             return this.$store.getters.calorie.toFixed(1)
           },
@@ -107,9 +106,10 @@
                     const wheel = this.$store.getters.wheel;
                     if (now - this.lastSendDate > wheel.term) {
                         this.lastSendDate = now;
-                        angle+=90;
+                        angle+=90 + 20;
                         angle%=360;
                         const _angle = ((wheel.reverse ? 360 - angle - wheel.offset: angle + wheel.offset) + 360) % 360;
+                        console.log("SET-LED_POS: " + _angle);
                         setLedPos(this.$store.getters.device && this.$store.getters.device.id, _angle);
                     }
                 }

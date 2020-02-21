@@ -112,7 +112,7 @@
         },
 
         curWheelMoveDistanceStr() {
-            const distance = this.$store.getters.wheel.currentMove/100;
+            const distance = this.$store.getters.wheel.move/100;
             if (distance < 1000) {
                 return Math.round(distance);
             } else if (distance < 10000){
@@ -122,7 +122,7 @@
             }
         },
         curWheelMoveDistanceUnit() {
-            return (this.$store.getters.wheel.currentMove/100) < 1000 ? 'm' : 'km';
+            return (this.$store.getters.wheel.move /100) < 1000 ? 'm' : 'km';
         },
 
         calorieStr() {

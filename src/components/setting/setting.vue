@@ -220,7 +220,8 @@
                     Alert("There is no name.", "Warning")
                     return;
                 }
-                const id = this.curViewCatId === 0 ? new Date().getTime() : this.curViewCatId;
+                // const id = this.curViewCatId === 0 ? new Date().getTime() : this.curViewCatId;
+                const id = 1;
                 this.$store.commit('setCatId', id);
                 this.$store.commit('setCat', {
                     id,

@@ -9,7 +9,7 @@ export default new Vuex.Store({
     mode: null,
     battery: -1,
     colors: localStorage.getItem('_colors') ? JSON.parse(localStorage.getItem('_colors')) : [],
-    cats: localStorage.getItem('_cats') ? JSON.parse(localStorage.getItem('_cats')) : [],
+    cats: localStorage.getItem('_cats') ? JSON.parse(localStorage.getItem('_cats')) : [{id: 1, birth: moment().format("YYYY-MM-DD"), weight: null, rib: null, leg: null, image: null}],
     curCatId: 1,
     isBackButtonDisabled: false,
     user: JSON.parse(localStorage.getItem('_user')),

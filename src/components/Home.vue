@@ -220,7 +220,7 @@
 
   .footer {
     display: flex;
-    flex: 0 0 0;
+    flex: 0 0 auto;
     justify-content: space-between;
     padding: 20px 15px 15px 15px;
   }

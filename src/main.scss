@@ -6,7 +6,6 @@
   src:
     local("Material Icons"),
     local("MaterialIcons-Regular"),
-    url("#{$icon-font-dir}MaterialIcons-Regular.woff2") format("woff2"),
     url("#{$icon-font-dir}MaterialIcons-Regular.woff") format("woff");
 }
 
@@ -45,7 +44,6 @@ $nanum-font-dir: "~typeface-nanum-barun-gothic/";
   font-weight: 400;
   src: local('Nanum Barun Gothic'),
   local('NanumBarunGothic'),
-  url("#{$nanum-font-dir}NanumBarunGothic.woff2") format('woff2'),
   url("#{$nanum-font-dir}NanumBarunGothic.woff") format('woff');
 }
 
@@ -55,7 +53,6 @@ $nanum-font-dir: "~typeface-nanum-barun-gothic/";
   font-weight: 700;
   src: local('Nanum Barun Gothic Bold'),
   local('NanumBarunGothicBold'),
-  url("#{$nanum-font-dir}NanumBarunGothicBold.woff2") format('woff2'),
   url("#{$nanum-font-dir}NanumBarunGothicBold.woff") format('woff');
 }
 

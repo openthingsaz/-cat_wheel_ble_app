@@ -112,7 +112,7 @@
           </ul>
         </div>
       </div>
-      <div class="footer">
+      <div class="footer safe-bottom">
         <button @click="saveCat">Save</button>
       </div>
     </div>

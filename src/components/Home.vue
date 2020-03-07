@@ -33,7 +33,7 @@
       </div>
     </div>
 
-    <div class="footer">
+    <div class="footer safe-bottom">
       <div class="footerBtn" @click="$router.push('/chart/distance')">
         <div>
           <span>
@@ -194,8 +194,10 @@
     }
 
     #circlePointer {
-      padding-bottom: 12px;
       position: relative;
+      display: flex;
+      flex-grow: 1;
+      align-items: center;
     }
 
     #wheelDp {

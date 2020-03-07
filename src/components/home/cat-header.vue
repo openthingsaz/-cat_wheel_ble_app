@@ -85,7 +85,7 @@
 <style lang="scss" scoped>
   .header-wrapper {
     display:flex;
-    padding: 40px 24px 32px 24px;
+    padding: 20px 24px 32px 24px;
     width: 100%;
   }
 

@@ -45,7 +45,7 @@
 
         computed:{
             size() {
-                var hoff = 390;
+                var hoff = 365;
                 return Math.min(this.windowHeight-hoff, this.windowWidth)
             },
             offset() {

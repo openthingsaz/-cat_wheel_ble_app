@@ -8,7 +8,7 @@
           >
             <v-list-tile-avatar>
               <v-list-tile-action>
-                <v-icon>photo_camera</v-icon>
+                <img src="img/icons/camera-icon.png" class="icon" alt=""/>
               </v-list-tile-action>
             </v-list-tile-avatar>
             <v-list-tile-title>Take a Photo</v-list-tile-title>
@@ -19,7 +19,7 @@
           >
             <v-list-tile-avatar>
               <v-list-tile-action>
-                <v-icon>photo_library</v-icon>
+                <img src="img/icons/library-icon.png" class="icon" alt=""/>
               </v-list-tile-action>
             </v-list-tile-avatar>
             <v-list-tile-title>Photo Album</v-list-tile-title>
@@ -30,7 +30,7 @@
           >
             <v-list-tile-avatar>
               <v-list-tile-action>
-                <v-icon>delete</v-icon>
+                <img src="img/icons/delete-icon.png" class="icon" alt=""/>
               </v-list-tile-action>
             </v-list-tile-avatar>
             <v-list-tile-title>Delete Photo</v-list-tile-title>
@@ -397,7 +397,13 @@
   }
 
 
-
+  .icon {
+    width: 36px;
+    height: 36px;
+    margin: 0 auto;
+    opacity: 0.7;
+    border-radius: 0;
+  }
 
 </style>
 

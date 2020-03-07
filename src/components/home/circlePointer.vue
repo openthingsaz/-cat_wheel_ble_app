@@ -49,6 +49,7 @@
         computed:{
             size() {
               const safeArea = getSafeArea();
+
                 var hoff = 365 + safeArea.top + safeArea.bottom;
                 return Math.min(this.windowHeight-hoff, this.windowWidth)
             },

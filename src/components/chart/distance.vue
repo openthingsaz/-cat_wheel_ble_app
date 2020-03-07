@@ -46,7 +46,7 @@
     export default {
         components: {chart: chart},
         data: function () {
-          const safeArea = getSafeArea;
+          const safeArea = getSafeArea();
             return {
                 chartData: null,
                 chartHeight: window.innerHeight - 200 - safeArea.top - safeArea.bottom,

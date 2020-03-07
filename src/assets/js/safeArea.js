@@ -10,5 +10,6 @@ export function getSafeArea() {
     left: parseInt(computed.paddingLeft) || 0
   };
   document.body.removeChild(div);
+  console.log(result);
   return result;
 }

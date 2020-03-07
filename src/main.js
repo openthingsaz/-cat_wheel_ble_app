@@ -6,6 +6,7 @@ import 'vuetify/dist/vuetify.min.css'
 import VueCordova from 'vue-cordova'
 import VueHead from 'vue-head'
 import './main.scss'
+import FastClick from './assets/js/fastclick'
 
 import App from './App'
 import router from './router.js'
@@ -23,6 +24,10 @@ if (window.location.protocol === 'file:' || window.location.port === '3000') {
   cordovaScript.setAttribute('src', 'cordova.js')
   document.body.appendChild(cordovaScript)
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  FastClick.attach(document.body);
+}, false);
 
 /* eslint-disable no-new */
 new Vue({

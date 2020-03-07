@@ -9,7 +9,8 @@
     "build": "node build/build.js",
     "build:release": "node build/build.js --release",
     "browser": "cordova run browser",
-    "ios": "cordova run ios",
+    "ios": "cordova prepare ios",
+    "ios:release": "cordova build ios --release",
     "android": "cordova run android --device",
     "android:release": "cordova build android --release",
     "android-vm": "cordova run android"

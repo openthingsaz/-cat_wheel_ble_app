@@ -33,8 +33,8 @@
     <div id="chart">
       <chart :chart-data="chartData" :options="chartOptions" :height="chartHeight"></chart>
     </div>
+    <div class="safe-bottom"></div>
   </div>
-  <div class="safe-bottom"></div>
 </template>
 <script>
     import {mapGetters} from 'vuex'
@@ -301,7 +301,7 @@
     height: 36px;
     background-color: #0A3444;
     color: #2EB7BD;
-    font-size: 18px;
+    font-size: 16px;
 
     & > div {
       display: flex;

@@ -304,7 +304,7 @@
     height: 36px;
     background-color: #0A3444;
     color: #2EB7BD;
-    font-size: 18px;
+    font-size: 16px;
 
     & > div {
       display: flex;

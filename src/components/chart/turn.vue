@@ -43,13 +43,15 @@
     import {connect} from '../../assets/js/db'
     import moment from 'moment'
     import chart from './chart.vue'
+    import {getSafeArea} from '../../assets/js/safeArea'
 
     export default {
         components: {chart: chart},
         data: function () {
+          const safeArea = getSafeArea;
             return {
                 chartData: null,
-                chartHeight: window.innerHeight - 200,
+                chartHeight: window.innerHeight - 200 - safeArea.top - safeArea.bottom,
                 chartOptions: {
                     layout: {
                         padding: {

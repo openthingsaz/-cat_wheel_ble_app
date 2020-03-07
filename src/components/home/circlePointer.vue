@@ -27,6 +27,9 @@
 <script>
     import { mapGetters } from 'vuex'
     import {setLedPos, write} from "../../assets/js/bleUtill"
+    import {getSafeArea} from '../../assets/js/safeArea'
+
+
     export default {
         name: 'circlePointer',
         data() {
@@ -45,7 +48,8 @@
 
         computed:{
             size() {
-                var hoff = 365;
+              const safeArea = getSafeArea();
+                var hoff = 365 + safeArea.top + safeArea.bottom;
                 return Math.min(this.windowHeight-hoff, this.windowWidth)
             },
             offset() {

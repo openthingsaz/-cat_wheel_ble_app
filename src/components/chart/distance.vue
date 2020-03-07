@@ -34,6 +34,7 @@
       <chart :chart-data="chartData" :options="chartOptions" :height="chartHeight"></chart>
     </div>
   </div>
+  <div class="safe-bottom"></div>
 </template>
 <script>
     import {mapGetters} from 'vuex'

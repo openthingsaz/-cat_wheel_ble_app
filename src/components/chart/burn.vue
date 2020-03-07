@@ -35,6 +35,7 @@
     <div id="chart">
       <chart :chart-data="chartData" :options="chartOptions" :height="chartHeight"></chart>
     </div>
+    <div class="safe-bottom"></div>
   </div>
 </template>
 <script>

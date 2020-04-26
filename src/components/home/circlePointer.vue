@@ -68,7 +68,7 @@
             return this.wheelMoveDistance < 1000 ? 'm' : 'km'
           },
           calorie(){
-            return this.$store.getters.calorie.toFixed(1)
+            return (this.$store.getters.calorie || 0).toFixed(1)
           },
           curColorValue() {
               return [

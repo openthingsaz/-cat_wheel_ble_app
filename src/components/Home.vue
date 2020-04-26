@@ -98,7 +98,7 @@
     },
     computed: {
         wheelMoveDistanceStr() {
-            const distance = this.$store.getters.wheelMoveDistance;
+            const distance = this.$store.getters.wheelMoveDistance || 0;
             if (distance < 1000) {
                 return Math.round(distance);
             } else if (distance < 10000){
@@ -112,7 +112,7 @@
         },
 
         curWheelMoveDistanceStr() {
-            const distance = this.$store.getters.wheel.move/100;
+            const distance = (this.$store.getters.wheel.move || 0)/100;
             if (distance < 1000) {
                 return Math.round(distance);
             } else if (distance < 10000){
@@ -126,7 +126,7 @@
         },
 
         calorieStr() {
-            const calorie = this.$store.getters.calorie;
+            const calorie = this.$store.getters.calorie || 0;
             return calorie.toFixed(1);
         },
         ...mapGetters([

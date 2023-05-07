@@ -34,7 +34,7 @@
     "cordova-sqlite-storage": "^3.4.1",
     "csv-stringify-as-promised": "^2.0.3",
     "material-design-icons-iconfont": "^3.0.3",
-    "moment": "^2.22.2",
+    "moment": "^2.29.4",
     "pouchdb": "^7.1.1",
     "typeface-nanum-barun-gothic": "^1.0.0",
     "uuid": "^3.2.1",
